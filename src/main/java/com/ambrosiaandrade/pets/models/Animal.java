@@ -1,11 +1,15 @@
 package com.ambrosiaandrade.pets.models;
 
 import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
+import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 
+import com.ambrosiaandrade.pets.interfaces.IAnimal;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 /**
  * Animal class represents a generic animal with properties such as name, age,
@@ -14,8 +18,9 @@ import java.time.LocalDate;
  * * The class uses Lombok annotations for boilerplate code reduction.
  * */
 @Data
+@Slf4j
 @AllArgsConstructor
-public class Animal {
+public class Animal implements IAnimal {
     
     private int id;
     
@@ -26,15 +31,49 @@ public class Animal {
 
     @NonNull
     private LocalDate birthday;
+
+    @NonNull
     private AnimalTypeEnum animalType;
     private AnimalDietEnum animalDiet;
+    private AnimalGenderEnum animalGender;
 
     public Animal () {
         this.setBirthday(LocalDate.now());
-        this.setAge(0);
-        this.setAgeInHumanYears(0);
+        calculateAge();
         this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
         this.setAnimalType(AnimalTypeEnum.OTHER);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+    }
+
+    public Animal (LocalDate date) {
+        this.setBirthday(date);
+        calculateAge(date);
+        this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
+        this.setAnimalType(AnimalTypeEnum.OTHER);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+    }
+
+    @Override
+    public void makeSound() {
+        log.info("...");
+    }
+
+    @Override
+    public void calculateAge() {
+        var years = Period.between(getBirthday(), LocalDate.now()).getYears();
+        this.setAge(years);
+        this.setAgeInHumanYears(years);
+    }
+
+    public void calculateAge(LocalDate date) {
+        int years = Period.between(date, LocalDate.now()).getYears();
+        this.setAge(years);
+        this.setAgeInHumanYears(years);
+    }
+
+    public void setBirthday(LocalDate date) {
+        this.birthday = date;
+        calculateAge(date);
     }
 
 }

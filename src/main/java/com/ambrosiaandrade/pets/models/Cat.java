@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
+import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import com.ambrosiaandrade.pets.interfaces.IAnimal;
 import lombok.*;
@@ -22,11 +23,15 @@ public class Cat extends Animal implements IAnimal {
     public Cat() {
         this.setAnimalDiet(AnimalDietEnum.CARNIVOROUS);
         this.setAnimalType(AnimalTypeEnum.CAT);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setBirthday(LocalDate.now());
+        this.calculateAge();
     }
 
     public Cat(LocalDate birthday) {
         this.setAnimalDiet(AnimalDietEnum.CARNIVOROUS);
         this.setAnimalType(AnimalTypeEnum.CAT);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(birthday);
         this.calculateAge();
     }

@@ -1,14 +1,11 @@
 package com.ambrosiaandrade.pets.entities;
 
 import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
+import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 
@@ -19,6 +16,7 @@ import java.time.LocalDate;
  */
 @Data
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -43,6 +41,10 @@ public class AnimalEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "animal_diet", length = 20)
     private AnimalDietEnum animalDiet;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "animal_gender", length = 20)
+    private AnimalGenderEnum animalGender;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

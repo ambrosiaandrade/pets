@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
+import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import com.ambrosiaandrade.pets.interfaces.IAnimal;
 import lombok.*;
@@ -17,11 +18,15 @@ public class Dog extends Animal implements IAnimal {
     public Dog() {
         this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
         this.setAnimalType(AnimalTypeEnum.DOG);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setBirthday(LocalDate.now());
+        this.calculateAge();
     }
 
     public Dog(LocalDate birthday) {
         this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
         this.setAnimalType(AnimalTypeEnum.DOG);
+        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(birthday);
         this.calculateAge();
     }
