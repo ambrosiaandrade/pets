@@ -127,7 +127,6 @@
                                 <exclude>**/*$Proxy*.class</exclude>
                                 <exclude>**/*$HibernateProxy*.class</exclude>
                                 <exclude>**/*$EnhancerBySpringCGLIB*.class</exclude>
-                                <exclude>**/*$MockitoMock*.class</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -145,7 +144,6 @@
                                 <exclude>**/enums/**</exclude>
                                 <exclude>**/exceptions/**</exclude>
                                 <exclude>**/interfaces/**</exclude>
-                                <exclude>**/*$MockitoMock*</exclude>
                                 <exclude>**/*Application.class</exclude>
                             </excludes>
                         </configuration>
