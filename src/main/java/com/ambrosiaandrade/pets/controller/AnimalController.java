@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/animal")
 public class AnimalController {
-
+    // todo actuator
     private final AnimalService service;
 
     public AnimalController(AnimalService service) {
