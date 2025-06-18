@@ -5,7 +5,6 @@ import com.ambrosiaandrade.pets.interfaces.IAnimalMapper;
 import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.models.Cat;
 import com.ambrosiaandrade.pets.models.Dog;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,8 +17,11 @@ import java.util.stream.IntStream;
 @Component
 public class AdvanceUtil {
 
-    @Autowired
-    private IAnimalMapper mapper;
+    private final IAnimalMapper mapper;
+
+    public AdvanceUtil(IAnimalMapper mapper) {
+        this.mapper = mapper;
+    }
 
     public List<AnimalEntity> generateAnimalsWithFor(int number) {
         var entities = new ArrayList<AnimalEntity>();
@@ -56,17 +58,8 @@ public class AdvanceUtil {
         return animal;
     }
 
-    // Java 21+, ThreadLocalRandom does not extends from Random
     private Animal getAnimal(Random random) {
-        return switch (random.nextInt(2)) {
-            case 0 -> new Cat();
-            case 1 -> new Dog();
-            default -> new Animal();
-        };
-    }
-
-    private Animal getAnimal(ThreadLocalRandom random) {
-        return switch (random.nextInt(2)) {
+        return switch (random.nextInt(3)) {
             case 0 -> new Cat();
             case 1 -> new Dog();
             default -> new Animal();
@@ -74,11 +67,6 @@ public class AdvanceUtil {
     }
 
     private String getAnimalName(Random random) {
-        List<String> names = Arrays.asList("Shadow", "Charlie", "Max", "Coco", "Bailey", "Lucky");
-        return names.get(random.nextInt(names.size()));
-    }
-
-    private String getAnimalName(ThreadLocalRandom random) {
         List<String> names = Arrays.asList("Shadow", "Charlie", "Max", "Coco", "Bailey", "Lucky");
         return names.get(random.nextInt(names.size()));
     }

@@ -1,30 +1,16 @@
 package com.ambrosiaandrade.pets.controller;
 
-import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import com.ambrosiaandrade.pets.factory.MockAnimal;
-import com.ambrosiaandrade.pets.interfaces.IAnimalMapper;
 import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.models.Cat;
-import com.ambrosiaandrade.pets.repositories.AnimalRepository;
 import com.ambrosiaandrade.pets.service.AnimalService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
-import org.mockito.Answers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 

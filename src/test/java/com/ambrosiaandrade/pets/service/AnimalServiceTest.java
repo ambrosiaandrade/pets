@@ -34,17 +34,16 @@ class AnimalServiceTest {
 
     @Mock
     private AnimalRepository animalRepository;
-
-    private IAnimalMapper animalMapper;
+    private IAnimalMapper mapper;
 
     @InjectMocks
     private AnimalService animalService;
 
     @BeforeEach
     void setUp() {
-        animalMapper = Mappers.getMapper(IAnimalMapper.class);
+        mapper = Mappers.getMapper(IAnimalMapper.class);
         MockitoAnnotations.openMocks(this);
-        animalService = new AnimalService(animalRepository, animalMapper);
+        animalService = new AnimalService(animalRepository, mapper);
     }
 
     @Nested
@@ -56,12 +55,12 @@ class AnimalServiceTest {
             var animals = MockAnimal.generateAnimals();
 
             for (Animal animal : animals) {
-                AnimalEntity entity = animalMapper.toEntity(animal);
+                AnimalEntity entity = mapper.toEntity(animal);
                 entity.setId(1);
 
                 when(animalRepository.save(entity)).thenReturn(entity);
 
-                animal = animalMapper.toModel(entity);
+                animal = mapper.toModel(entity);
 
                 Animal result = animalService.saveAnimal(animal);
 
@@ -76,9 +75,10 @@ class AnimalServiceTest {
         @DisplayName("Save animal - error")
         void saveAnimal_dataAccessException() {
             Animal animal = MockAnimal.generateAnimal(DOG);
-            AnimalEntity entity = animalMapper.toEntity(animal);
+            AnimalEntity entity = mapper.toEntity(animal);
 
-            when(animalRepository.save(entity)).thenThrow(new DataAccessException("DB error") {});
+            when(animalRepository.save(entity)).thenThrow(new DataAccessException("DB error") {
+            });
 
             Executable executable = () -> animalService.saveAnimal(animal);
 
@@ -93,7 +93,7 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Get animal - success")
         void getAnimal_success() {
-            AnimalEntity entity = animalMapper.toEntity(MockAnimal.generateAnimal(DOG));
+            AnimalEntity entity = mapper.toEntity(MockAnimal.generateAnimal(DOG));
 
             when(animalRepository.findById(anyInt())).thenReturn(Optional.of(entity));
 
@@ -117,7 +117,8 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Get animal - error")
         void getAnimal_dataAccessException() {
-            when(animalRepository.findById(anyInt())).thenThrow(new DataAccessException("DB error") {});
+            when(animalRepository.findById(anyInt())).thenThrow(new DataAccessException("DB error") {
+            });
 
             Executable executable = () -> animalService.getAnimal(1);
 
@@ -133,7 +134,7 @@ class AnimalServiceTest {
 
             var animals = MockAnimal.generateAnimals();
             animals.forEach(animal -> {
-                list.add(animalMapper.toEntity(animal));
+                list.add(mapper.toEntity(animal));
             });
 
             when(animalRepository.findAll()).thenReturn(list);
@@ -148,7 +149,8 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Get all animals - error")
         void getAnimals_dataAccessException() {
-            when(animalRepository.findAll()).thenThrow(new DataAccessException("DB error") {});
+            when(animalRepository.findAll()).thenThrow(new DataAccessException("DB error") {
+            });
 
             Executable executable = () -> animalService.getAnimals();
 
@@ -160,7 +162,7 @@ class AnimalServiceTest {
         @DisplayName("Get animals by type - success")
         void getAnimalsByType_success() {
 
-            List<AnimalEntity> list = List.of(animalMapper.toEntity(MockAnimal.generateAnimal(CAT)));
+            List<AnimalEntity> list = List.of(mapper.toEntity(MockAnimal.generateAnimal(CAT)));
 
             when(animalRepository.findByAnimalType(any())).thenReturn(list);
 
@@ -174,7 +176,8 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Get animals by type - error database")
         void getAnimalsByType_dataAccessException() {
-            when(animalRepository.findByAnimalType(any())).thenThrow(new DataAccessException("DB error") {});
+            when(animalRepository.findByAnimalType(any())).thenThrow(new DataAccessException("DB error") {
+            });
 
             Executable executable = () -> animalService.getAnimalsByType(CAT.name());
 
@@ -185,8 +188,6 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Get animals by type - error illegalArgument")
         void getAnimalsByType_illegalArgumentException() {
-            //when(animalRepository.findByAnimalType(any())).thenThrow(new IllegalArgumentException("Invalid animal type") {});
-
             Executable executable = () -> animalService.getAnimalsByType("INVALID_TYPE");
 
             assertThrows(BaseException.class, executable);
@@ -207,7 +208,8 @@ class AnimalServiceTest {
         @Test
         @DisplayName("Delete animal - error dataAccessException")
         void deleteAnimal_dataAccessException() {
-            doThrow(new DataAccessException("Error"){}).when(animalRepository).deleteById(anyInt());
+            doThrow(new DataAccessException("Error") {
+            }).when(animalRepository).deleteById(anyInt());
 
             Executable executable = () -> animalService.deleteAnimal(1);
 
@@ -224,10 +226,10 @@ class AnimalServiceTest {
         @DisplayName("Update animal - success")
         void updateAnimal_success() {
             Animal animal = MockAnimal.generateAnimal(DOG);
-            AnimalEntity entity = animalMapper.toEntity(new Cat());
+            AnimalEntity entity = mapper.toEntity(new Cat());
 
             when(animalRepository.findById(any())).thenReturn(Optional.of(entity));
-            when(animalRepository.save(any())).thenReturn(animalMapper.toEntity(animal));
+            when(animalRepository.save(any())).thenReturn(mapper.toEntity(animal));
 
             var result = animalService.updateAnimal(animal, 1);
 
@@ -252,7 +254,8 @@ class AnimalServiceTest {
         void updateAnimal_dataAccessException() {
             Animal animal = MockAnimal.generateAnimal(DOG);
 
-            when(animalRepository.findById(any())).thenThrow(new DataAccessException("error") {});
+            when(animalRepository.findById(any())).thenThrow(new DataAccessException("error") {
+            });
 
             Executable executable = () -> animalService.updateAnimal(animal, 1);
 
