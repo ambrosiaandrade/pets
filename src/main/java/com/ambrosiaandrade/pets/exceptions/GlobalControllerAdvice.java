@@ -1,7 +1,6 @@
 package com.ambrosiaandrade.pets.exceptions;
 
-import java.util.NoSuchElementException;
-
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
