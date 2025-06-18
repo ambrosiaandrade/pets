@@ -1,14 +1,15 @@
 package com.ambrosiaandrade.pets.models;
 
-import java.time.LocalDate;
-import java.time.Period;
-
 import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
 import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import com.ambrosiaandrade.pets.interfaces.IAnimal;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDate;
+import java.time.Period;
 
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
