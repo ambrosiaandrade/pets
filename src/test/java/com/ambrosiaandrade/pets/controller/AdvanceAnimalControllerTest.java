@@ -6,7 +6,6 @@ import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.service.AdvanceService;
 import com.ambrosiaandrade.pets.service.AsyncService;
 import com.ambrosiaandrade.pets.service.KafkaService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,16 +14,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -118,31 +121,43 @@ class AdvanceAnimalControllerTest {
         }
     }
 
-    // FIXME
     @Nested
-    @Disabled
     class Async {
 
         @Test
         @DisplayName("Should return 200 OK when async completes successfully")
         void testAsyncSuccess() throws Exception {
+            String expected = "All good";
             when(asyncService.success())
-                    .thenReturn(CompletableFuture.completedFuture("All good"));
+                    .thenReturn(CompletableFuture.completedFuture(expected));
 
-            mockMvc.perform(get("/advance/async/success"))
+            MvcResult result = mockMvc.perform(get("/advance/async/success"))
+                    .andDo(print())
                     .andExpect(status().isOk())
-                    .andExpect(content().string("All good"));
+                    .andReturn();
+
+            ResponseEntity<Object> response = (ResponseEntity<Object>) result.getAsyncResult();
+            assertTrue(expected.equalsIgnoreCase(Objects.requireNonNull(response.getBody()).toString()));
         }
 
         @Test
         @DisplayName("Should handle RuntimeException inside async and return 500")
         void testAsyncRuntimeException() throws Exception {
+            String expected = "Simulated failure";
             when(asyncService.error())
-                    .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Simulated failure")));
+                    .thenReturn(CompletableFuture.failedFuture(new RuntimeException(expected)));
 
-            mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(result))
+                    .andDo(print())
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Simulated failure")));
+                    .andReturn();
+
+            ResponseEntity<Object> response = (ResponseEntity<Object>) result.getAsyncResult();
+            assertTrue(expected.equalsIgnoreCase(Objects.requireNonNull(response.getBody()).toString()));
         }
 
         @Test
@@ -153,9 +168,13 @@ class AdvanceAnimalControllerTest {
                             new CompletionException(new IllegalArgumentException("Wrapped inside CompletionException")))
                     );
 
-            mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(result))
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Wrapped inside CompletionException")));
+                    .andExpect(content().string(containsString("Wrapped inside CompletionException")));
         }
 
         @Test
@@ -175,7 +194,7 @@ class AdvanceAnimalControllerTest {
 
             mockMvc.perform(asyncDispatch(result))
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Took too long")));
+                    .andExpect(content().string(containsString("Took too long")));
         }
 
         @Test
@@ -184,9 +203,14 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new RejectedExecutionException("Thread pool is full")));
 
-            mockMvc.perform(get("/advance/async/error"))
+            MvcResult restult = mockMvc.perform(get("/advance/async/error"))
+                    .andDo(print())
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(restult))
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Thread pool is full")));
+                    .andExpect(content().string(containsString("Thread pool is full")));
         }
 
         @Test
@@ -195,9 +219,14 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new NullPointerException("NPE in async")));
 
-            mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+                    .andDo(print())
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(result))
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("NPE in async")));
+                    .andExpect(content().string(containsString("NPE in async")));
         }
 
         @Test
@@ -206,9 +235,29 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new IllegalArgumentException("Illegal arg")));
 
-            mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+                    .andDo(print())
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(result))
                     .andExpect(status().isInternalServerError())
-                    .andExpect(content().string(org.hamcrest.Matchers.containsString("Illegal arg")));
+                    .andExpect(content().string(containsString("Illegal arg")));
+        }
+
+        @Test
+        @DisplayName("Should return 200 OK when no exception occurs in async method")
+        void testAsyncSuccessWhenNoException() throws Exception {
+            when(asyncService.error())
+                    .thenReturn(CompletableFuture.completedFuture("All good"));
+
+            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+                    .andExpect(request().asyncStarted())
+                    .andReturn();
+
+            mockMvc.perform(asyncDispatch(result))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("All good"));
         }
 
     }

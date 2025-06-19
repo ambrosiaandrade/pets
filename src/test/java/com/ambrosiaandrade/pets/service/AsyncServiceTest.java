@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +19,20 @@ class AsyncServiceTest {
         CompletableFuture<String> future = asyncService.success();
         String result = future.get(); // Waits for completion
         assertEquals("Finished task!", result);
+    }
+
+    @Test
+    void testThreadInterrupted() throws Exception {
+        Thread.currentThread().interrupt(); // Force interruption
+
+        CompletableFuture<String> future = asyncService.success();
+
+        // Wait and assert
+        ExecutionException thrown = assertThrows(ExecutionException.class, future::get);
+        assertTrue(thrown.getCause() instanceof InterruptedException);
+
+        // Reset the interrupt status so it doesn't affect other tests
+        Thread.interrupted();
     }
 
     @Test
