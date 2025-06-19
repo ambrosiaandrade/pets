@@ -5,6 +5,7 @@ import com.ambrosiaandrade.pets.interfaces.IAnimalMapper;
 import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.repositories.AnimalRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -23,23 +25,32 @@ public class AdvanceService {
     private final IAnimalMapper mapper;
     private final AdvanceUtil util;
 
+    @Value("${app.animal.limit:5000}")
+    private Long animalLimit;
+
     public AdvanceService(AnimalRepository repository, IAnimalMapper mapper, AdvanceUtil util) {
         this.repository = repository;
         this.mapper = mapper;
         this.util = util;
     }
 
-    public void generateAnimalsAndSave(int number) {
+    public List<String> generateAnimalsAndSave(int number) {
+        if (number <= 0) return List.of("Invalid number");
+        if (!verifyDataLimit()) return List.of("Maximum data limit");
+
+        List<String> list = new ArrayList<>();
+
         try {
-            runAndLog("For(;;)", number, util::generateAnimalsWithFor);
-            runAndLog("IntStream", number, util::generateAnimalWithIntStream);
-            runAndLog("IntStream_parallel", number, util::generateAnimalWithIntStreamAndParallel);
+            list.add(runAndLog("For(;;)", number, util::generateAnimalsWithFor));
+            list.add(runAndLog("IntStream", number, util::generateAnimalWithIntStream));
+            list.add(runAndLog("IntStream_parallel", number, util::generateAnimalWithIntStreamAndParallel));
         } catch (DataAccessException e) {
             log.error(e.getMessage());
         }
+        return list;
     }
 
-    private void runAndLog(String label, Integer number, Function<Integer, List<AnimalEntity>> generator) {
+    private String runAndLog(String label, Integer number, Function<Integer, List<AnimalEntity>> generator) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
@@ -47,7 +58,19 @@ public class AdvanceService {
         repository.saveAll(entities);
 
         stopWatch.stop();
-        log.info("[{}] Saved {} new entities in {} ms", label, entities.size(), stopWatch.getTotalTimeMillis());
+
+        String result = String.format("[%s] Saved %s new entities in %s ms", label, entities.size(), stopWatch.getTotalTimeMillis());
+        log.info(result);
+        return result;
+    }
+
+    private boolean verifyDataLimit() {
+        long count = repository.count();
+        if (count >= animalLimit) {
+            log.warn("Animal limit reached: {}", count);
+            return false;
+        }
+        return true;
     }
 
     public List<Animal> getDataNoPagination() {

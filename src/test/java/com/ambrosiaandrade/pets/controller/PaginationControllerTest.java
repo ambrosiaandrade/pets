@@ -40,7 +40,7 @@ class PaginationControllerTest {
         @Test
         @DisplayName("Populating database")
         void populateDatabase() throws Exception {
-            doNothing().when(service).generateAnimalsAndSave(anyInt());
+            when(service.generateAnimalsAndSave(anyInt())).thenReturn(List.of("For"));
 
             mockMvc.perform(
                             get("/advance/populate")
@@ -54,6 +54,18 @@ class PaginationControllerTest {
                     )
                     .andDo(print())
                     .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("Populating database but error")
+        void populateDatabase_error() throws Exception {
+            when(service.generateAnimalsAndSave(anyInt())).thenReturn(List.of());
+
+            mockMvc.perform(
+                            get("/advance/populate")
+                    )
+                    .andDo(print())
+                    .andExpect(status().isInternalServerError());
         }
 
         @Test

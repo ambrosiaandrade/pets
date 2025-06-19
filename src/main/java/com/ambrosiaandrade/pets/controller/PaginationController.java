@@ -46,7 +46,8 @@ public class PaginationController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Data generated and populated in database",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = List.class)))
             ),
             @ApiResponse(
                     responseCode = "500",
@@ -56,8 +57,10 @@ public class PaginationController {
     })
     @GetMapping("/populate")
     public ResponseEntity<Object> populateDatabase(@RequestParam(required = false, defaultValue = "100") Integer number) {
-        service.generateAnimalsAndSave(number);
-        return ResponseEntity.ok().body("Data generated and populated in database");
+        var result = service.generateAnimalsAndSave(number);
+        if (!result.isEmpty())
+            return ResponseEntity.ok().body(result);
+        return ResponseEntity.internalServerError().body("Error while generating data");
     }
 
     @Operation(
