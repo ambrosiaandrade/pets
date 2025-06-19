@@ -4,38 +4,39 @@ package com.ambrosiaandrade.pets.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
+@ExtendWith(MockitoExtension.class)
 class KafkaServiceTest {
 
+    @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
+    @InjectMocks
     private KafkaService kafkaService;
-
-    @BeforeEach
-    void setUp() {
-        kafkaTemplate = mock(KafkaTemplate.class);
-        kafkaService = new KafkaService();
-        // Inject mock KafkaTemplate
-        var kafkaTemplateField = getField(KafkaService.class, "kafkaTemplate");
-        kafkaTemplateField.setAccessible(true);
-        try {
-            kafkaTemplateField.set(kafkaService, kafkaTemplate);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     void testSendMessage() {
         String message = "Hello Kafka";
+
+        CompletableFuture<SendResult<String, String>> future = new CompletableFuture<>();
+
+        when(kafkaTemplate.send(anyString(), anyString()))
+                .thenReturn(future);
+
         kafkaService.sendMessage(message);
 
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
@@ -44,6 +45,48 @@ class KafkaServiceTest {
         verify(kafkaTemplate, times(1)).send(topicCaptor.capture(), messageCaptor.capture());
         assertEquals("test-topic", topicCaptor.getValue());
         assertEquals(message, messageCaptor.getValue());
+    }
+
+    @Test
+    void testSendMessage_success_shouldLogInfo() {
+        String message = "Hello Kafka";
+
+        SendResult<String, String> fakeResult = mock(SendResult.class);
+        CompletableFuture<SendResult<String, String>> future = CompletableFuture.completedFuture(fakeResult);
+
+        when(kafkaTemplate.send(anyString(), anyString())).thenReturn(future);
+
+        kafkaService.sendMessage(message);
+
+        verify(kafkaTemplate).send("test-topic", message);
+    }
+
+    @Test
+    void testSendMessage_exception() {
+        String message = "Hello Kafka";
+
+        // Simulate KafkaTemplate throwing
+        when(kafkaTemplate.send(anyString(), anyString()))
+                .thenThrow(new RuntimeException("Kafka send failed"));
+
+        // Execute
+        assertThrows(RuntimeException.class, () -> kafkaService.sendMessage(message));
+
+        // Verify it was called
+        verify(kafkaTemplate).send("test-topic", message);
+    }
+
+    @Test
+    void testSendMessage_whenKafkaSendFails_shouldLogError() {
+        String message = "fail";
+
+        // Simula falha no envio Kafka
+        when(kafkaTemplate.send(anyString(), anyString()))
+                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Kafka error")));
+
+        assertDoesNotThrow(() -> kafkaService.sendMessage(message));
+
+        verify(kafkaTemplate).send("test-topic", message);
     }
 
     @Test
@@ -65,6 +108,17 @@ class KafkaServiceTest {
         assertEquals(2, messages.size());
         assertTrue(messages.contains("msg1"));
         assertTrue(messages.contains("msg2"));
+    }
+
+    @Test
+    void testConsume_shouldCatchExceptionInAdd() {
+        KafkaService service = Mockito.spy(new KafkaService());
+
+        // Simulate an exception when calling addMessage
+        doThrow(new RuntimeException("forced error")).when(service).addMessage(anyString());
+
+        // Should not throw — just log error
+        assertDoesNotThrow(() -> service.consume("test-message"));
     }
 
     // Helper method to access private fields via reflection

@@ -1,25 +1,18 @@
 package com.ambrosiaandrade.pets.controller;
 
 import com.ambrosiaandrade.pets.PetsApplication;
-import com.ambrosiaandrade.pets.factory.MockAnimal;
-import com.ambrosiaandrade.pets.models.Animal;
-import com.ambrosiaandrade.pets.service.AdvanceService;
 import com.ambrosiaandrade.pets.service.AsyncService;
-import com.ambrosiaandrade.pets.service.KafkaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -28,9 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,88 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = PetsApplication.class)
 @AutoConfigureMockMvc
-class AdvanceAnimalControllerTest {
+class AsyncControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private AdvanceService service;
-
-    @MockitoBean
-    private KafkaService kafkaService;
-
-    @MockitoBean
     private AsyncService asyncService;
-
-    @Nested
-    class Data {
-
-        @Test
-        @DisplayName("Populating database")
-        void populateDatabase() throws Exception {
-            doNothing().when(service).generateAnimalsAndSave(anyInt());
-
-            mockMvc.perform(
-                            get("/advance/populate")
-                                    .param("number", "40")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            mockMvc.perform(
-                            get("/advance/populate")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-        }
-
-        @Test
-        @DisplayName("Get data with cache")
-        void getDataNoPaginationWithCache() throws Exception {
-            List<Animal> list = MockAnimal.generateAnimals();
-            when(service.getDataNoPaginationButWithCache()).thenReturn(list);
-
-            mockMvc.perform(
-                            get("/advance/no-pagination-with-cache")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            verify(service, times(1)).getDataNoPaginationButWithCache();
-        }
-
-        @Test
-        @DisplayName("Get data without cache and no pagination")
-        void getDataNoPagination() throws Exception {
-            List<Animal> list = MockAnimal.generateAnimals();
-            when(service.getDataNoPagination()).thenReturn(list);
-
-            mockMvc.perform(
-                            get("/advance/no-pagination")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            verify(service, times(1)).getDataNoPagination();
-        }
-
-        @Test
-        @DisplayName("Get data without cache but pagination")
-        void getDataWithPagination() throws Exception {
-            List<Animal> list = MockAnimal.generateAnimals();
-            Page<Animal> page = new PageImpl<>(list);
-            when(service.getDataWithPagination(any())).thenReturn(page);
-
-            mockMvc.perform(
-                            get("/advance/pagination")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            verify(service, times(1)).getDataWithPagination(any());
-        }
-    }
 
     @Nested
     class Async {
@@ -131,7 +47,7 @@ class AdvanceAnimalControllerTest {
             when(asyncService.success())
                     .thenReturn(CompletableFuture.completedFuture(expected));
 
-            MvcResult result = mockMvc.perform(get("/advance/async/success"))
+            MvcResult result = mockMvc.perform(get("/async/success"))
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andReturn();
@@ -147,7 +63,7 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new RuntimeException(expected)));
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andExpect(request().asyncStarted())
                     .andReturn();
 
@@ -168,7 +84,7 @@ class AdvanceAnimalControllerTest {
                             new CompletionException(new IllegalArgumentException("Wrapped inside CompletionException")))
                     );
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andExpect(request().asyncStarted())
                     .andReturn();
 
@@ -184,7 +100,7 @@ class AdvanceAnimalControllerTest {
             CompletableFuture<String> hangingFuture = new CompletableFuture<>();
             when(asyncService.error()).thenReturn(hangingFuture);
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andDo(print())
                     .andExpect(request().asyncStarted())
                     .andReturn();
@@ -203,7 +119,7 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new RejectedExecutionException("Thread pool is full")));
 
-            MvcResult restult = mockMvc.perform(get("/advance/async/error"))
+            MvcResult restult = mockMvc.perform(get("/async/error"))
                     .andDo(print())
                     .andExpect(request().asyncStarted())
                     .andReturn();
@@ -219,7 +135,7 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new NullPointerException("NPE in async")));
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andDo(print())
                     .andExpect(request().asyncStarted())
                     .andReturn();
@@ -235,7 +151,7 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.failedFuture(new IllegalArgumentException("Illegal arg")));
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andDo(print())
                     .andExpect(request().asyncStarted())
                     .andReturn();
@@ -251,45 +167,13 @@ class AdvanceAnimalControllerTest {
             when(asyncService.error())
                     .thenReturn(CompletableFuture.completedFuture("All good"));
 
-            MvcResult result = mockMvc.perform(get("/advance/async/error"))
+            MvcResult result = mockMvc.perform(get("/async/error"))
                     .andExpect(request().asyncStarted())
                     .andReturn();
 
             mockMvc.perform(asyncDispatch(result))
                     .andExpect(status().isOk())
                     .andExpect(content().string("All good"));
-        }
-
-    }
-
-    @Nested
-    class Kafka {
-
-        @Test
-        void kafkaProduce() throws Exception {
-            doNothing().when(kafkaService).sendMessage(anyString());
-
-            mockMvc.perform(
-                            get("/advance/kafka/producer")
-                                    .param("msg", "Hello kafka")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            verify(kafkaService, times(1)).sendMessage(anyString());
-        }
-
-        @Test
-        void kafkaConsume() throws Exception {
-            when(kafkaService.getMessages()).thenReturn(List.of("Hello kafka", "test 1"));
-
-            mockMvc.perform(
-                            get("/advance/kafka/consumer")
-                    )
-                    .andDo(print())
-                    .andExpect(status().isOk());
-
-            verify(kafkaService, times(1)).getMessages();
         }
 
     }

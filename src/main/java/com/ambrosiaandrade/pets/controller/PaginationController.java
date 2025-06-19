@@ -3,8 +3,6 @@ package com.ambrosiaandrade.pets.controller;
 import com.ambrosiaandrade.pets.exceptions.ErrorMessage;
 import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.service.AdvanceService;
-import com.ambrosiaandrade.pets.service.AsyncService;
-import com.ambrosiaandrade.pets.service.KafkaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -24,24 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
-// FIXME
 @Tag(name = "Advance Animal", description = "Advanced operations related to animals, including database population, pagination, async tasks, and Kafka messaging.")
 @Slf4j
 @RestController
 @RequestMapping("/advance")
-public class AdvanceAnimalController {
+public class PaginationController {
 
     @Autowired
     private AdvanceService service;
-
-    @Autowired
-    private KafkaService kafkaService;
-
-    @Autowired
-    private AsyncService asyncService;
 
     @Operation(
             summary = "Populate the database with random animal data",
@@ -49,7 +38,7 @@ public class AdvanceAnimalController {
     )
     @Parameter(
             name = "number",
-            description = "Number of animals to be generated.",
+            description = "Number of animals to be generated will be the triple.",
             required = false,
             example = "100"
     )
@@ -142,104 +131,6 @@ public class AdvanceAnimalController {
     public ResponseEntity<Page<Animal>> getDataWithPagination(Pageable pageable) {
         var result = service.getDataWithPagination(pageable);
         return ResponseEntity.ok().body(result);
-    }
-
-    @Operation(
-            summary = "Simulates an async task"
-            , description = "Executes a task asynchronously and returns the result after completion.")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Async task completed successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            )
-    })
-    @GetMapping("/async/success")
-    public CompletableFuture<ResponseEntity<String>> success() {
-        return asyncService.success()
-                .thenApply(ResponseEntity::ok);
-    }
-
-    @Operation(
-            summary = "Simulates an async task that fails",
-            description = "Executes a task asynchronously that throws an error and returns the error message."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Async task completed with error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            )
-    })
-    @GetMapping("/async/error")
-    public CompletableFuture<ResponseEntity<Object>> error() {
-        return asyncService.error()
-                .handle((result, ex) -> {
-                    if (ex != null) {
-                        Throwable cause = (ex instanceof CompletionException) ? ex.getCause() : ex;
-                        return ResponseEntity.internalServerError().body("Error: " + cause.getMessage());
-                    }
-                    return ResponseEntity.ok(result);
-                });
-    }
-
-    @Operation(
-            summary = "Produce a message to Kafka",
-            description = "Sends a message to a Kafka topic."
-    )
-    @Parameter(
-            name = "msg",
-            description = "The message to send to Kafka. Default is 'Hello kafka'.",
-            required = false,
-            example = "Hello kafka"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Message sent successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            )
-    })
-    @GetMapping("/kafka/producer")
-    public ResponseEntity<Object> kafkaProduce(@RequestParam(defaultValue = "Hello kafka") String msg) {
-        kafkaService.sendMessage(msg);
-        return ResponseEntity.ok("Message sent: " + msg);
-    }
-
-    @Operation(
-            summary = "Consume messages from Kafka",
-            description = "Retrieves all the messages from a Kafka topic."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Messages consumed successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
-            )
-    })
-    @GetMapping("/kafka/consumer")
-    public ResponseEntity<Object> kafkaConsume() {
-        return ResponseEntity.ok("Message consumed: " + kafkaService.getMessages());
     }
 
 }

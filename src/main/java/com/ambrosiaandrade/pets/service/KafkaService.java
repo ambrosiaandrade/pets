@@ -21,14 +21,26 @@ public class KafkaService {
     private static final String TOPIC = "test-topic";
 
     public void sendMessage(String message) {
-        log.info("[Kafka] Send: " + message);
-        kafkaTemplate.send(TOPIC, message);
+        kafkaTemplate.send(TOPIC, message)
+                .thenAccept(result -> log.info("[Kafka] Message sent successfully: {}", message))
+                .exceptionally(ex -> {
+                    log.error("[Kafka] Failed to send message: {}", message, ex);
+                    return null;
+                });
     }
 
-    @KafkaListener(topics = "test-topic", groupId = "test-group")
+    @KafkaListener(topics = TOPIC, groupId = "test-group")
     public void consume(String message) {
+        try {
+            addMessage(message);
+            log.info("[Kafka] Consumed: {}", message);
+        } catch (Exception e) {
+            log.error("[Kafka] Failed to process message: {}", message, e);
+        }
+    }
+
+    protected void addMessage(String message) {
         messages.add(message);
-        log.info("[Kafka] Consumed: " + message);
     }
 
     public List<String> getMessages() {
