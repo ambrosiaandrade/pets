@@ -1,11 +1,9 @@
 
 package com.ambrosiaandrade.pets.service;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,8 +24,18 @@ class KafkaServiceTest {
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
+
     @InjectMocks
     private KafkaService kafkaService;
+    
+    private static final String TOPIC = "unit-test-topic";
+
+    @BeforeEach
+    void setup() throws NoSuchFieldException, IllegalAccessException {
+        Field field = KafkaService.class.getDeclaredField("TOPIC");
+        field.setAccessible(true);
+        field.set(kafkaService, TOPIC);
+    }
 
     @Test
     void testSendMessage() {
@@ -43,7 +52,7 @@ class KafkaServiceTest {
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 
         verify(kafkaTemplate, times(1)).send(topicCaptor.capture(), messageCaptor.capture());
-        assertEquals("test-topic", topicCaptor.getValue());
+        assertEquals(TOPIC, topicCaptor.getValue());
         assertEquals(message, messageCaptor.getValue());
     }
 
@@ -58,7 +67,7 @@ class KafkaServiceTest {
 
         kafkaService.sendMessage(message);
 
-        verify(kafkaTemplate).send("test-topic", message);
+        verify(kafkaTemplate).send(TOPIC, message);
     }
 
     @Test
@@ -73,7 +82,7 @@ class KafkaServiceTest {
         assertThrows(RuntimeException.class, () -> kafkaService.sendMessage(message));
 
         // Verify it was called
-        verify(kafkaTemplate).send("test-topic", message);
+        verify(kafkaTemplate).send(TOPIC, message);
     }
 
     @Test
@@ -86,7 +95,7 @@ class KafkaServiceTest {
 
         assertDoesNotThrow(() -> kafkaService.sendMessage(message));
 
-        verify(kafkaTemplate).send("test-topic", message);
+        verify(kafkaTemplate).send(TOPIC, message);
     }
 
     @Test
