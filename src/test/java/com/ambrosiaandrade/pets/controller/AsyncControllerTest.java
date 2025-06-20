@@ -27,7 +27,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = PetsApplication.class)
+@SpringBootTest(classes = PetsApplication.class, properties = {
+    "spring.kafka.bootstrap-servers=disabled",
+    "spring.kafka.consumer.auto-offset-reset=earliest"
+})
 @AutoConfigureMockMvc
 class AsyncControllerTest {
 
