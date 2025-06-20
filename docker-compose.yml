@@ -1,0 +1,76 @@
+services:
+  # Serviço Kafka rodando em modo KRaft (sem Zookeeper)
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka  # Nome que os outros containers usarão para se conectar
+    ports:
+      - "9092:9092"  # Porta exposta para o host (localhost)
+      - "9093:9093"  # Porta de controle do KRaft (não precisa ser exposta)
+    environment:
+      # Habilita o modo KRaft (dispensa Zookeeper)
+      KAFKA_KRAFT_MODE: "true"
+
+      # Define que este broker atuará como broker e controller
+      KAFKA_PROCESS_ROLES: "broker,controller"
+
+      # ID único do broker (em ambiente com mais brokers, precisa ser diferente)
+      KAFKA_NODE_ID: 1
+
+      # Define os votantes do cluster (requerido no KRaft)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # Define os listeners: onde o Kafka escuta conexões
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+
+      # Mapeia nomes de listeners para protocolos de segurança
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      # Define o listener que os brokers usarão para falar entre si
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Define o listener usado para coordenação no modo KRaft
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # Anuncia o endereço que os clientes devem usar para se conectar
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://host.docker.internal:9092
+
+      # Caminho para persistência dos dados (logs, tópicos, etc)
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+
+      # Permite criar tópicos automaticamente ao produzir ou consumir
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+      # Configurações adicionais úteis
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168  # Logs por 7 dias
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0  # Sem delay de rebalanço
+      CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"  # Pode ser qualquer UUID base64
+
+    volumes:
+      - kafka-data:/var/lib/kafka/data  # Volume persistente dos dados do Kafka
+    networks:
+      - kafka-net  # Rede compartilhada com os outros containers
+
+  # Kafka UI (Kafbat) para visualizar tópicos, mensagens, consumers etc
+  kafbat-ui:
+    container_name: kafbat-ui
+    image: ghcr.io/kafbat/kafka-ui:latest
+    ports:
+      - "8081:8080"  # Acesse via http://localhost:8081
+    environment:
+      # Nome do cluster no painel da UI
+      KAFKA_CLUSTERS_0_NAME: local
+      # Endereço do broker Kafka acessível pelo nome no Docker
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      # Protocolo usado
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT
+    networks:
+      - kafka-net  # Precisa estar na mesma rede que o Kafka
+
+volumes:
+  kafka-data:  # Volume nomeado para armazenar os dados do Kafka
+
+networks:
+  kafka-net:
+    driver: bridge  # Rede Docker para permitir comunicação por hostname
