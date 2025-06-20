@@ -17,7 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "Animal", description = "Operations related to animals")
+@Tag(name = "1. Animal", description = "Operations related to animals")
 @RestController
 @RequestMapping("/animal")
 public class AnimalController {

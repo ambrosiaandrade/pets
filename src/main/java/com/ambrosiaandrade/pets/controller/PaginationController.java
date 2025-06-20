@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "Advance Animal", description = "Advanced operations related to animals, including database population, pagination, async tasks, and Kafka messaging.")
+@Tag(name = "2. Advanced Animal", description = "Advanced operations related to animals, including database population, cache and pagination")
 @Slf4j
 @RestController
 @RequestMapping("/advance")

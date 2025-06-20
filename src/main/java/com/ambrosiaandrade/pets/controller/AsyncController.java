@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-@Tag(name = "Async Operations", description = "Operations related to asynchronous tasks, including success and error handling.")
+@Tag(name = "3. Async Operations", description = "Operations related to asynchronous tasks, including success and error handling.")
 @Slf4j
 @RestController
 @RequestMapping("/async")

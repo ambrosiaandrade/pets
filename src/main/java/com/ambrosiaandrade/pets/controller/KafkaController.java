@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Kafka Operations", description = "Operations related to Kafka messaging, including producing and consuming messages.")
+import java.util.HashMap;
+import java.util.Map;
+
+@Tag(name = "4. Kafka Operations", description = "Operations related to Kafka messaging, including producing and consuming messages.")
 @Slf4j
 @RestController
 @RequestMapping("/kafka")
@@ -31,7 +34,7 @@ public class KafkaController {
             description = "Sends a message to a Kafka topic."
     )
     @Parameter(
-            name = "msg",
+            name = "message",
             description = "The message to send to Kafka. Default is 'Hello kafka'.",
             required = false,
             example = "Hello kafka"
@@ -49,9 +52,14 @@ public class KafkaController {
             )
     })
     @GetMapping("/producer")
-    public ResponseEntity<Object> kafkaProduce(@RequestParam(defaultValue = "Hello kafka") String msg) {
-        kafkaService.sendMessage(msg);
-        return ResponseEntity.ok("Message sent: " + msg);
+    public ResponseEntity<Map<String, String>> kafkaProduce(@RequestParam(defaultValue = "Hello kafka") String message) {
+        kafkaService.sendMessage(message);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "Message sent");
+        response.put("message", message);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -74,8 +82,13 @@ public class KafkaController {
             )
     })
     @GetMapping("/consumer")
-    public ResponseEntity<Object> kafkaConsume() {
-        return ResponseEntity.ok("Message consumed: " + kafkaService.getMessages());
+    public ResponseEntity<Map<String, String>> kafkaConsume() {
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "Message consumed");
+        response.put("message", kafkaService.getMessages().toString());
+
+        return ResponseEntity.ok(response);
     }
 
 }

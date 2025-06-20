@@ -2,6 +2,7 @@ package com.ambrosiaandrade.pets.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,8 @@ public class KafkaService {
 
     private final List<String> messages = new CopyOnWriteArrayList<>();
 
-    private static final String TOPIC = "test-topic";
+    @Value("${app.kafka.topic}")
+    private String TOPIC;
 
     public void sendMessage(String message) {
         kafkaTemplate.send(TOPIC, message)
@@ -29,7 +31,9 @@ public class KafkaService {
                 });
     }
 
-    @KafkaListener(topics = TOPIC, groupId = "test-group")
+    @KafkaListener(
+            topics = "${app.kafka.topic}",
+            groupId = "${spring.kafka.consumer.group-id}")
     public void consume(String message) {
         try {
             addMessage(message);
