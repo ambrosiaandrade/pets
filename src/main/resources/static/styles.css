@@ -1,34 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Quicksand:wght@300..700&display=swap');
-html {
-    scroll-behavior: smooth;
-    background: var(--bg);
-    font-family: 'Quicksand', Arial, Helvetica, sans-serif;
+body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #fff;
 }
 
 h1 {
-    font-family: 'Orbitron', Arial, Helvetica, sans-serif;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.highlight {
-  background-color: #f28ca0; /* same tone as the image */
-  font-weight: bold;
-  padding: 0 2px;
+p {
+  max-width: 600px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .pretty-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  width: 100%;
+  max-width: 400px; /* <-- reduz a largura */
 }
 
 .pretty-list li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .pretty-list li a {
@@ -36,20 +36,21 @@ ul {
   text-decoration: none;
   color: #2c2c2c;
   background-color: #f3f3f3;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   transition: background-color 0.3s ease, color 0.3s ease;
   font-weight: 500;
+  text-align: center;
 }
 
 .pretty-list li a:hover {
-  background-color: #d63c68; /* tom mais bonito do rosa */
+  background-color: #d63c68;
   color: white;
 }
 
-/* Destacar o primeiro item como "ativo" */
+/* Destaque o item ativo */
 .pretty-list li:first-child a {
-  background-color: #f28ca0; /* rosa claro */
+  background-color: #f28ca0;
   font-weight: bold;
   color: #212121;
 }
