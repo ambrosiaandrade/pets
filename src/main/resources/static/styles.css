@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Quicksand:wght@300..700&display=swap');
+html {
+    scroll-behavior: smooth;
+    background: var(--bg);
+    font-family: 'Quicksand', Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    font-family: 'Orbitron', Arial, Helvetica, sans-serif;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.highlight {
+  background-color: #f28ca0; /* same tone as the image */
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+.pretty-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.pretty-list li {
+  margin-bottom: 8px;
+}
+
+.pretty-list li a {
+  display: block;
+  text-decoration: none;
+  color: #2c2c2c;
+  background-color: #f3f3f3;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: 500;
+}
+
+.pretty-list li a:hover {
+  background-color: #d63c68; /* tom mais bonito do rosa */
+  color: white;
+}
+
+/* Destacar o primeiro item como "ativo" */
+.pretty-list li:first-child a {
+  background-color: #f28ca0; /* rosa claro */
+  font-weight: bold;
+  color: #212121;
+}
