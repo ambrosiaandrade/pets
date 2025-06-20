@@ -1,6 +1,5 @@
 package com.ambrosiaandrade.pets.controller;
 
-import com.ambrosiaandrade.pets.PetsApplication;
 import com.ambrosiaandrade.pets.factory.MockAnimal;
 import com.ambrosiaandrade.pets.models.Animal;
 import com.ambrosiaandrade.pets.service.AdvanceService;
@@ -8,8 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -24,8 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = PetsApplication.class)
-@AutoConfigureMockMvc
+@WebMvcTest(PaginationController.class)
 class PaginationControllerTest {
 
     @Autowired
