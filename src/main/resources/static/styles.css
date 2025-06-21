@@ -47,10 +47,3 @@ p {
   background-color: #d63c68;
   color: white;
 }
-
-/* Destaque o item ativo */
-.pretty-list li:first-child a {
-  background-color: #f28ca0;
-  font-weight: bold;
-  color: #212121;
-}

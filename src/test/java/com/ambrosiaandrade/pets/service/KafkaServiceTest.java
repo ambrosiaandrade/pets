@@ -124,7 +124,7 @@ class KafkaServiceTest {
         KafkaService service = Mockito.spy(new KafkaService());
 
         // Simulate an exception when calling addMessage
-        doThrow(new RuntimeException("forced error")).when(service).addMessage(anyString());
+        doThrow(new RuntimeException("forced error")).when(service).processMessage(anyString());
 
         // Should not throw — just log error
         assertDoesNotThrow(() -> service.consume("test-message"));

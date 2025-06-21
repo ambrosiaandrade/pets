@@ -12,10 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +25,9 @@ public class KafkaController {
 
     @Autowired
     private KafkaService kafkaService;
+
+    private static final String STATUS = "status";
+    private static final String MESSAGE = "message";
 
     @Operation(
             summary = "Produce a message to Kafka",
@@ -56,8 +56,37 @@ public class KafkaController {
         kafkaService.sendMessage(message);
 
         Map<String, String> response = new HashMap<>();
-        response.put("status", "Message sent");
-        response.put("message", message);
+        response.put(STATUS, "Message sent");
+        response.put(MESSAGE, message);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Retrieves all messages from Kafka",
+            description = "Retrieves all the messages from a Kafka topic, from the beginning."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Messages consumed successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = String.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+            )
+    })
+    @GetMapping("/consumer")
+    public ResponseEntity<Map<String, String>> kafkaConsume() {
+
+        Map<String, String> response = new HashMap<>();
+        response.put(STATUS, "Message consumed");
+        response.put(MESSAGE, kafkaService.getMessages().toString());
 
         return ResponseEntity.ok(response);
     }
@@ -81,12 +110,12 @@ public class KafkaController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
             )
     })
-    @GetMapping("/consumer")
-    public ResponseEntity<Map<String, String>> kafkaConsume() {
+    @GetMapping("/consumer/{number}")
+    public ResponseEntity<Map<String, String>> kafkaConsume(@PathVariable int number) {
 
         Map<String, String> response = new HashMap<>();
-        response.put("status", "Message consumed");
-        response.put("message", kafkaService.getMessages().toString());
+        response.put(STATUS, "Message consumed");
+        response.put(MESSAGE, kafkaService.fetchMessagesFromKafka(number).toString());
 
         return ResponseEntity.ok(response);
     }

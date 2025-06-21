@@ -11,10 +11,18 @@
     <ul class="pretty-list">
         <li><a href="/swagger-ui/index.html" target="_blank">Swagger UI</a></li>
         <li><a href="/h2-console" target="_blank">H2 Console</a></li>
-        <li><a href="/kafbat" target="_blank">Kafbat UI</a></li>
+        <li><a id="kafbat-link" href="" target="_blank">Kafbat UI</a></li>
         <li><a href="/jacoco/index.html" target="_blank">JaCoCo Report</a></li>
         <li><a href="https://github.com/ambrosiaandrade/pets/" target="_blank">GitHub Project</a></li>
     </ul>
+
+    <script>
+        const kafbatPort = 8081;
+        const kafbatHost = location.hostname;
+        const kafbatUrl = `http://${kafbatHost}:${kafbatPort}`;
+        document.getElementById('kafbat-link').href = kafbatUrl;
+    </script>
+
      <link rel="stylesheet" href="styles.css">
 </body>
 </html>
