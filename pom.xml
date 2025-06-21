@@ -32,6 +32,8 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <jacoco.version>0.8.10</jacoco.version>
         <springdoc.version>2.8.8</springdoc.version>
+        <spring.boot.maven.plugin>3.2.5</spring.boot.maven.plugin>
+        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -89,25 +91,29 @@
 
     <build>
         <plugins>
+            <!-- Spring Boot plugin to build executable JARs -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.5</version> <!-- ou a versão compatível com seu Spring -->
+                <version>${spring.boot.maven.plugin}</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>repackage</goal> <!-- Cria um JAR executável -->
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Maven compiler plugin with annotation processors for Lombok and MapStruct -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations
+                    </generatedSourcesDirectory>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -122,6 +128,8 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Loads dependency properties (can be removed if not used) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -133,34 +141,37 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Runs unit tests and sets up Mockito Java agent (if needed) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine></argLine>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                    </argLine>
                 </configuration>
             </plugin>
+
+            <!-- JaCoCo plugin to measure code coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
                 <executions>
-                    <!-- Prepares JaCoCo agent before tests -->
+                    <!-- Prepares the JaCoCo agent before running tests -->
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
                             <excludes>
-                                <!-- Evita instrumentar classes do Java interno -->
                                 <exclude>org/jcp/xml/**</exclude>
                                 <exclude>com/sun/**</exclude>
                                 <exclude>sun/*</exclude>
                                 <exclude>java/*</exclude>
                                 <exclude>jdk/*</exclude>
                                 <exclude>javax/*</exclude>
-                                <!-- Evita instrumentar mocks gerados -->
                                 <exclude>**/*Application.class</exclude>
                                 <exclude>**/*$HibernateInstantiator.class</exclude>
                                 <exclude>**/*$Proxy*.class</exclude>
@@ -169,7 +180,8 @@
                             </excludes>
                         </configuration>
                     </execution>
-                    <!-- Generates the report after tests -->
+
+                    <!-- Generates HTML report after running tests -->
                     <execution>
                         <id>report</id>
                         <phase>verify</phase>
@@ -187,7 +199,8 @@
                             </excludes>
                         </configuration>
                     </execution>
-                    <!-- Configures a code coverage check during the build process -->
+
+                    <!-- Enforces a minimum coverage threshold during build -->
                     <execution>
                         <id>check</id>
                         <goals>
@@ -196,7 +209,6 @@
                         <configuration>
                             <rules>
                                 <rule>
-									<!-- Entire project -->
                                     <element>BUNDLE</element>
                                     <limits>
                                         <limit>
@@ -219,11 +231,12 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Copiar relatório JaCoCo para static/jacoco -->
+
+            <!-- Copies the generated JaCoCo report to the static resources folder for frontend access -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>${maven.resources.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>copy-jacoco-report</id>
