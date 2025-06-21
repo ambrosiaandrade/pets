@@ -1,11 +1,14 @@
 # Pet Project
+A modern Spring Boot application with Kafka, Docker, and CI/CD integration.
 
 <details>
 <summary><b>Table of contents</b></summary>
   <ol>
     <li><a href="#-description">Description</a></li>
-    <li><a href="#-technologies">Technologies</a></li>
-    <li><a href="#-demo">Demo</a></li>
+    <li><a href="#-features">Features</a></li>
+    <li><a href="#-technologies">Technologies</a>
+      <ul><li><a href="#maven">Maven</a></li></ul>
+    </li>
     <li>
       <a href="#-getting-started">Getting Started</a>
       <ul>
@@ -13,8 +16,13 @@
         <li><a href="#usage">Usage</a></li>
       </ul>
     </li>
+    <li><a href="#-demo">Demo</a></li>
+    <li><a href="#-folder-structure">Folder Structure</a></li>
     <li><a href="#-useful-links">Useful Links</a></li>
-    <li><a href="#sequences-diagrams">Sequences diagrams</a></li>
+    <li><a href="#-sequence-diagrams">Sequence Diagrams</a></li>
+    <li><a href="#-testing">Testing</a></li>
+    <li><a href="#-ci-and-cd">CI and CD</a></li>
+    <li><a href="#-contributing">Contributing</a></li>
     <li><a href="#-author">Author</a></li>
     <li><a href="#-license">License</a></li>
   </ol>
@@ -22,14 +30,36 @@
 
 ### 📖 Description
 
-This project is a comprehensive toolbox application featuring robust CRUD operations and seamless integration with modern technologies such as Spring Boot, Kafka, and Docker. Designed for scalability and maintainability, it leverages best practices in software engineering, including automated testing and CI/CD workflows via GitHub Actions. Ideal for learning, prototyping, or as a foundation for other service.
+This project is a comprehensive toolbox application featuring robust CRUD operations and seamless integration with modern technologies such as Spring Boot, Kafka, and Docker. Designed for scalability and maintainability, it leverages best practices in software engineering, including automated testing and CI/CD workflows via GitHub Actions. Ideal for learning, prototyping, or serving as a foundation for other services.
+
+### ✨ Features
+
+* **🔁 Full CRUD Operations** – Manage entities through RESTful APIs with clear separation of concerns.
+* **📄 Pagination Support** – Efficiently handle large datasets with pageable endpoints.
+* **⚙️ Asynchronous Endpoints** – Demonstrates how to run non-blocking operations using `CompletableFuture`.
+* **📨 Kafka Integration** – Includes Kafka producers and consumers with example topics and message flow.
+* **📊 Sequence Diagrams** – Visual documentation of key controller interactions using PlantUML.
+* **🧪 Test Coverage with JaCoCo** – Enforces 80% code coverage and generates readable HTML reports.
+* **🧰 Swagger Integration** – Auto-generated API documentation using SpringDoc OpenAPI.
+* **📋 H2 In-Memory Database** – Lightweight database for development and testing purposes.
+* **📦 Docker-Ready** – Includes a `docker-compose` setup for Kafka and UI tools.
+* **📈 Actuator Monitoring** – Spring Boot Actuator enabled for health checks and system monitoring.
+* **♻️ DevTools Reloading** – Supports hot reloading via Spring DevTools for a smoother development experience.
+* **🧹 Clean Architecture Principles** – Follows a layered structure with clear separation between controllers, services, models, and mappers, making the codebase easier to maintain, test, and extend.
+* **🔐 Modular Dependency Setup** – Maven configuration using annotation processors and profile-based builds.
+* **📁 Static Dashboard** – `index.html` provides shortcuts to useful development tools and visual aids.
+
 
 ### 📦 Technologies
 
-[![Spring Boot][springboot-shield]][springboot-url] [![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Docker][docker-shield]][docker-url]
+[![Spring Boot][springboot-shield]][springboot-url] [![Spring Data JPA][jpa-shield]][jpa-url] [![Spring Web][web-shield]][web-url] [![Spring Boot Test][test-shield]][test-url] [![Springdoc OpenAPI][springdoc-shield]][springdoc-url] [![Spring Actuator][actuator-shield]][actuator-url] [![Spring Cache][cache-shield]][cache-url] [![DevTools][devtools-shield]][devtools-url]
+
+[![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Kafka UI][kafbat-shield]][kafbat-url] [![Docker][docker-shield]][docker-url] [![JUnit 5][junit5-shield]][junit5-url] [![Mockito][mockito-shield]][mockito-url] [![Swagger UI][swagger-shield]][swagger-url] [![H2 Database][h2-shield]][h2-url] [![Lombok][lombok-shield]][lombok-url] [![MapStruct][mapstruct-shield]][mapstruct-url]
+
+##### Maven
 
 <details>
-    <summary>Maven dependencies</summary>
+    <summary>Dependencies</summary>
 
 ```xml
 <properties>
@@ -98,7 +128,7 @@ This project is a comprehensive toolbox application featuring robust CRUD operat
 </details>
 
 <details>
-    <summary>Maven configuration</summary>
+    <summary>Configuration</summary>
 
 - _Spring Boot plugin to build executable JARs_
 - _Maven compiler plugin with annotation processors for Lombok and MapStruct_
@@ -280,14 +310,6 @@ This project is a comprehensive toolbox application featuring robust CRUD operat
 ```
 </details>
 
-### 🚀 Demo
-
-You can check the [Pet Project here](demo-url)
-
-![home-page](./images/home-page.png)
-The `index.html` page serves as a simple dashboard for the project, providing quick access links to Swagger UI, H2 Console, Kafka UI, JaCoCo coverage report, and the GitHub repository. It helps users easily navigate the main tools and resources of the application.
-
-
 ### 💡 Getting Started
 
 ##### Prerequisites
@@ -305,14 +327,36 @@ You should have the following installed in your machine:
     docker-compose up --build
     ```
     ![docker-compose-up](./images/docker-compose-up.png)
-- Check if the containers, kafka and kafbat-ui, are up
+- Ensure that the containers (Kafka and Kafbat UI) are running
     ![docker-ps](./images/docker-ps.png)
-    _OBS: Kafbat is one user interface for Apache Kafka_
+    _OBS: Note: Kafbat is a web-based UI for managing Apache Kafka topics and messages._
 
 - Build the project:
     ```sh
     mvn clean package
     ```
+
+### 🚀 Demo
+
+You can check the [Pet Project here](demo-url)
+
+![home-page](./images/home-page.png)
+The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
+
+### 🏗️ Folder Structure
+```bash
+src/
+├── main/
+│   ├── java/
+│   │   └── com/ambrosiaandrade/pets/
+│   │       ├── controller/
+│   │       ├── service/
+│   │       ├── model/
+│   │       └── ...
+│   └── resources/
+│       └── static/
+└── test/
+```
 
 ### 🔗 Useful Links
 
@@ -357,6 +401,33 @@ This controller serves as a demonstration of asynchronous processing in Java. It
 
 </details>
 
+### 🧪 Testing
+
+This project uses JUnit and Spring Boot Test for unit testing, along with Mockito for mocking dependencies.  
+Code coverage is enforced with JaCoCo (80% minimum threshold), and the report is generated under `/static/jacoco/index.html`.
+
+To run tests:
+```sh
+mvn test
+```
+
+### ⚙️ CI and CD
+
+This project uses **GitHub Actions** for Continuous Integration and Continuous Deployment.  
+Every push and pull request triggers the workflow to:
+
+- Build the project
+- Run all tests and enforce code coverage
+- Build and (optionally) push Docker images
+- (Optionally) Deploy to your server or cloud
+
+You can find the workflow definition in [`.github/workflows/`](.github/workflows/) in this repository.
+
+![GitHub Actions Status](https://github.com/ambrosiaandrade/pets/actions/workflows/maven-tests.yml/badge.svg)
+
+### 🤝 Contributing
+
+Contributions are welcome! If you'd like to help improve this project, feel free to fork it and submit a pull request.
 
 ### 🐱‍👤 Author
 
@@ -365,10 +436,7 @@ This controller serves as a demonstration of asynchronous processing in Java. It
 
 ### 📝 License
 
-<!--todo--> 
-_TODO: Create and update the license_
-
-This project is under the license **X**.
+This project is licensed under the **[MIT License](LICENSE)** — see the file for details.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
@@ -386,35 +454,61 @@ This project is under the license **X**.
 [kafka-shield]: https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white
 [kafka-url]: https://kafka.apache.org/
 
+[kafbat-shield]: https://img.shields.io/badge/Kafbat_UI-4B286D?style=for-the-badge&logo=apachekafka&logoColor=white
+[kafbat-url]: https://github.com/kafbat/kafbat
+
 [docker-shield]: https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
 [docker-url]: https://www.docker.com/
+
+[junit5-shield]: https://img.shields.io/badge/JUnit_5-25A162?style=for-the-badge&logo=junit5&logoColor=white
+[junit5-url]: https://junit.org/junit5/
+
+[mockito-shield]: https://img.shields.io/badge/Mockito-4EA94B?style=for-the-badge&logo=mockito&logoColor=white
+[mockito-url]: https://site.mockito.org/
+
+[swagger-shield]: https://img.shields.io/badge/Swagger_UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black
+[swagger-url]: http://localhost:8080/swagger-ui/index.html
+
+[h2-shield]: https://img.shields.io/badge/H2-4479A1?style=for-the-badge&logo=h2&logoColor=white
+[h2-url]: https://www.h2database.com/
+
+[jpa-shield]: https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[jpa-url]: https://spring.io/projects/spring-data-jpa
+
+[web-shield]: https://img.shields.io/badge/Spring%20Web-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[web-url]: https://spring.io/projects/spring-boot
+
+[lombok-shield]: https://img.shields.io/badge/Lombok-18A303?style=for-the-badge&logo=lombok&logoColor=white
+[lombok-url]: https://projectlombok.org/
+
+[test-shield]: https://img.shields.io/badge/Spring%20Boot%20Test-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[test-url]: https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing
+
+[mapstruct-shield]: https://img.shields.io/badge/MapStruct-6C3483?style=for-the-badge&logo=mapbox&logoColor=white
+[mapstruct-url]: https://mapstruct.org/
+
+[springdoc-shield]: https://img.shields.io/badge/Springdoc%20OpenAPI-49A942?style=for-the-badge&logo=openapiinitiative&logoColor=white
+[springdoc-url]: https://springdoc.org/
+
+[actuator-shield]: https://img.shields.io/badge/Spring%20Actuator-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[actuator-url]: https://docs.spring.io/spring-boot/docs/current/actuator-api/htmlsingle/
+
+[cache-shield]: https://img.shields.io/badge/Spring%20Cache-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[cache-url]: https://docs.spring.io/spring-boot/docs/current/reference/html/io.html#io.caching
+
+[devtools-shield]: https://img.shields.io/badge/DevTools-6DB33F?style=for-the-badge&logo=spring&logoColor=white
+[devtools-url]: https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools
+
+<!-- Social media -->
 
 [instagram-shield]: https://img.shields.io/badge/-Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white
 [instagram-url]:https://www.instagram.com/ambrosia_andrade_br/
 
-[js-shield]: https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=black
-[js-url]: https://www.javascript.com
-[ts-shield]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=TypeScript&logoColor=white
-[ts-url]: https://www.typescriptlang.org
-[angular-shield]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[angular-url]: https://angular.io/
-[bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[bootstrap-url]: https://getbootstrap.com
-[jquery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[jquery-url]: https://jquery.com
-[vscode-shield]: https://img.shields.io/badge/-Visual%20Studio%20Code-007ACC?style=for-the-badge&logo=Visual%20Studio%20Code
-[vscode-url]: https://code.visualstudio.com
-[node-shield]: https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white
-[node-url]: https://nodejs.org/en/
-[open-jdk-shield]: https://img.shields.io/badge/-OpenJDK-000?style=for-the-badge&logo=OpenJDK&logoColor=white
-[open-jdk-url]: https://openjdk.org
-[python-shield]: https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=Python&logoColor=white
-[python-url]: https://www.python.org
-[auth0-shield]: https://img.shields.io/badge/-Auth0-EB5424?style=for-the-badge&logo=Python&logoColor=white
-[auth0-url]: https://auth0.com
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=blue
 [linkedin-url]: https://linkedin.com/in/ambrosiaandrade
+
 [gmail-shield]: https://img.shields.io/badge/-Gmail-EA4335?style=for-the-badge&logo=gmail&logoColor=white
 [gmail-url]: mailto:ambrosiaandrade.pe@gmail.com
+
 [github-shield]: https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white
 [github-url]: https://github.com/ambrosiaandrade
