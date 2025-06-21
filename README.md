@@ -1,5 +1,5 @@
 # Pet Project
-A modern Spring Boot application with Kafka, Docker, and CI/CD integration.
+A modern Spring Boot RESTful API project following MVC architecture, featuring Kafka integration, Docker support, automated testing, and CI/CD with GitHub Actions.
 
 <details>
 <summary><b>Table of contents</b></summary>
@@ -365,7 +365,7 @@ src/
 
 - [H2 Console](http://localhost:8080/h2-console/)
     ![h2-console](./images/h2-console.png) 
-    
+
 - [Kafka UI](http://localhost:8081)
     ![kafbat-ui](./images/kafbat-ui.png)  
 
