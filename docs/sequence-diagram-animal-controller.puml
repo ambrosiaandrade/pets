@@ -1,0 +1,41 @@
+@startuml
+actor User
+participant "AnimalController" as Controller
+participant "AnimalService" as Service
+
+== Add Animal ==
+User -> Controller: POST /animal (Animal)
+Controller -> Service: saveAnimal(animal)
+Service --> Controller: savedAnimal
+Controller -> User: 201 Created (savedAnimal + Location header)
+
+== Get Animal by ID ==
+User -> Controller: GET /animal/{id}
+Controller -> Service: getAnimal(id)
+Service --> Controller: animal
+Controller -> User: 200 OK (animal)
+
+== Get Animals by Type ==
+User -> Controller: GET /animal/q?type=TYPE
+Controller -> Service: getAnimalsByType(type)
+Service --> Controller: List<Animal>
+Controller -> User: 200 OK (List<Animal>)
+
+== Get All Animals ==
+User -> Controller: GET /animal
+Controller -> Service: getAnimals()
+Service --> Controller: List<Animal>
+Controller -> User: 200 OK (List<Animal>)
+
+== Delete Animal ==
+User -> Controller: DELETE /animal/{id}
+Controller -> Service: deleteAnimal(id)
+Service --> Controller: void
+Controller -> User: 204 No Content
+
+== Update Animal ==
+User -> Controller: PUT /animal/{id} (Animal)
+Controller -> Service: updateAnimal(animal, id)
+Service --> Controller: updatedAnimal
+Controller -> User: 202 Accepted (updatedAnimal)
+@enduml

@@ -37,7 +37,3 @@ __pycache__/
 **/__pycache__/
 *.pyc
 *.pyo
-
-### Other files ###
-/docs
-docs/

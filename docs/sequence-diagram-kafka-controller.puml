@@ -1,0 +1,28 @@
+@startuml
+actor User
+participant "KafkaController" as Controller
+participant "KafkaService" as Service
+participant "Kafka" as KafkaBroker
+
+== Produce Message ==
+User -> Controller: GET /kafka/producer?message=...
+Controller -> Service: sendMessage(message)
+Service -> KafkaBroker: Produce message to topic
+KafkaBroker --> Service: Ack
+Service --> Controller: (void)
+Controller -> User: 200 OK {"status":"Message sent", "message":message}
+
+== Consume All Messages (memory) ==
+User -> Controller: GET /kafka/consumer
+Controller -> Service: getMessages()
+Service --> Controller: List<String>
+Controller -> User: 200 OK {"status":"Message consumed", "message":messages}
+
+== Consume N Messages (direct from Kafka) ==
+User -> Controller: GET /kafka/consumer/{number}
+Controller -> Service: fetchMessagesFromKafka(number)
+Service -> KafkaBroker: Poll messages (max=number)
+KafkaBroker --> Service: List<String>
+Service --> Controller: List<String>
+Controller -> User: 200 OK {"status":"Message consumed", "message":messages}
+@enduml

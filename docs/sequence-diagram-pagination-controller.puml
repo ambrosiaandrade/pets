@@ -1,0 +1,33 @@
+@startuml
+actor User
+participant "PaginationController" as Controller
+participant "AdvanceService" as Service
+
+== Populate Database ==
+User -> Controller: GET /advance/populate?number=100
+Controller -> Service: generateAnimalsAndSave(number)
+Service --> Controller: List<Animal>
+alt result not empty
+    Controller -> User: 200 OK (List<Animal>)
+else error
+    Controller -> User: 500 Internal Server Error ("Error while generating data")
+end
+
+== Get Data (No Pagination, With Cache) ==
+User -> Controller: GET /advance/no-pagination-with-cache
+Controller -> Service: getDataNoPaginationButWithCache()
+Service --> Controller: List<Animal>
+Controller -> User: 200 OK (List<Animal>)
+
+== Get Data (No Pagination) ==
+User -> Controller: GET /advance/no-pagination
+Controller -> Service: getDataNoPagination()
+Service --> Controller: List<Animal>
+Controller -> User: 200 OK (List<Animal>)
+
+== Get Data (With Pagination) ==
+User -> Controller: GET /advance/pagination?page=...&size=...
+Controller -> Service: getDataWithPagination(pageable)
+Service --> Controller: Page<Animal>
+Controller -> User: 200 OK (Page<Animal>)
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+actor User
+participant "AsyncController" as Controller
+participant "AsyncService" as Service
+
+== Async Success ==
+User -> Controller: GET /async/success
+Controller -> Service: success()
+Service --> Controller: CompletableFuture<String>
+Controller -> User: 200 OK (CompletableFuture<ResponseEntity<String>>)
+
+== Async Error ==
+User -> Controller: GET /async/error
+Controller -> Service: error()
+Service --> Controller: CompletableFuture<String> (exceptionally completes)
+Controller -> Controller: handle((result, ex) -> ...)
+alt Exception occurred
+    Controller -> User: 500 Internal Server Error (error message)
+else Success
+    Controller -> User: 200 OK (result)
+end
+@enduml
