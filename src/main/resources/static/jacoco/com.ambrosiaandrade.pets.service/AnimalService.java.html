@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnimalService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.service</a> &gt; <span class="el_source">AnimalService.java</span></div><h1>AnimalService.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.service;
+
+import com.ambrosiaandrade.pets.entities.AnimalEntity;
+import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
+import com.ambrosiaandrade.pets.exceptions.BaseException;
+import com.ambrosiaandrade.pets.interfaces.IAnimalMapper;
+import com.ambrosiaandrade.pets.models.Animal;
+import com.ambrosiaandrade.pets.models.Cat;
+import com.ambrosiaandrade.pets.models.Dog;
+import com.ambrosiaandrade.pets.repositories.AnimalRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L21">@Slf4j</span>
+public class AnimalService {
+
+    private final AnimalRepository animalRepository;
+    private final IAnimalMapper animalMapper;
+
+    /**
+     * Dependency injection using constructor is preferred for better testability and immutability.
+     * An alternative, but not recommended, would be by attribute with @Autowired annotation,
+     * */
+<span class="fc" id="L31">    public AnimalService(AnimalRepository animalRepository, IAnimalMapper mapper) {</span>
+<span class="fc" id="L32">        this.animalRepository = animalRepository;</span>
+<span class="fc" id="L33">        this.animalMapper = mapper;</span>
+<span class="fc" id="L34">    }</span>
+
+    public Animal saveAnimal(Animal animal) {
+        try {
+<span class="fc" id="L38">            handleEmptyFields(animal);</span>
+<span class="fc" id="L39">            AnimalEntity entity = animalMapper.toEntity(animal);</span>
+<span class="fc" id="L40">            var savedAnimal = animalRepository.save(entity);</span>
+<span class="fc" id="L41">            return animalMapper.toModel(savedAnimal);</span>
+<span class="fc" id="L42">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L43">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L44">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L45">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+    public Animal getAnimal(int id) {
+        try {
+<span class="fc" id="L51">            Optional&lt;AnimalEntity&gt; optionalAnimal = animalRepository.findById(id);</span>
+<span class="fc" id="L52">            return optionalAnimal.map(animalMapper::toModel).orElseThrow(() -&gt; new BaseException(&quot;Not found animal with &quot; + id + &quot; id&quot;, 404));</span>
+<span class="fc" id="L53">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L54">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L55">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L56">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+    public List&lt;Animal&gt; getAnimals() {
+        try {
+<span class="fc" id="L62">            var list = animalRepository.findAll();</span>
+<span class="fc" id="L63">            List&lt;Animal&gt; animals = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L64">            list.forEach(animalEntity -&gt; animals.add(animalMapper.toModel(animalEntity)));</span>
+<span class="fc" id="L65">            return animals;</span>
+<span class="fc" id="L66">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L67">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L68">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L69">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+    public List&lt;Animal&gt; getAnimalsByType(String type) {
+        try {
+<span class="fc" id="L75">            AnimalTypeEnum animalType = AnimalTypeEnum.valueOf(type.toUpperCase());</span>
+<span class="fc" id="L76">            List&lt;AnimalEntity&gt; list = animalRepository.findByAnimalType(animalType);</span>
+<span class="fc" id="L77">            return list.stream().map(animalMapper::toModel).toList();</span>
+<span class="fc" id="L78">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L79">            log.error(&quot;Invalid animal type: &quot; + type);</span>
+<span class="fc" id="L80">            throw new BaseException(&quot;Invalid animal type: &quot; + type, 400);</span>
+<span class="fc" id="L81">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L82">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L83">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L84">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+    public void deleteAnimal(int id) {
+        try {
+<span class="fc" id="L90">            animalRepository.deleteById(id);</span>
+<span class="fc" id="L91">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L92">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L93">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L94">            throw new BaseException(e.getMessage(), 500);</span>
+<span class="fc" id="L95">        }</span>
+<span class="fc" id="L96">    }</span>
+
+    public Animal updateAnimal(Animal animal, int id) {
+        try {
+<span class="fc" id="L100">            var animalUpdated = animalRepository.findById(id)</span>
+<span class="fc" id="L101">                .map(existing -&gt; {</span>
+<span class="fc" id="L102">                    updateEntityFields(existing, animal);</span>
+<span class="fc" id="L103">                    return existing;</span>
+                })
+<span class="fc" id="L105">                .orElseThrow(() -&gt; new BaseException(&quot;Animal with ID &quot; + id + &quot; not found.&quot;, 404));</span>
+<span class="fc" id="L106">            return animalMapper.toModel(animalRepository.save(animalUpdated));</span>
+<span class="fc" id="L107">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L108">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L109">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L110">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+    private void handleEmptyFields(Animal animal) {
+<span class="fc" id="L115">        Animal newAnimal = handleAnimalType(animal.getAnimalType(), animal.getBirthday());</span>
+
+<span class="fc" id="L117">        animal.setAge(newAnimal.getAge());</span>
+<span class="fc" id="L118">        animal.setAgeInHumanYears(newAnimal.getAgeInHumanYears());</span>
+<span class="fc" id="L119">        animal.setAnimalDiet(newAnimal.getAnimalDiet());</span>
+<span class="fc" id="L120">    }</span>
+
+    private void updateEntityFields(AnimalEntity existing, Animal newAnimal) {
+<span class="fc" id="L123">        existing.setName(newAnimal.getName());</span>
+<span class="fc" id="L124">        existing.setBirthday(newAnimal.getBirthday());</span>
+<span class="fc" id="L125">        existing.setAnimalType(newAnimal.getAnimalType());</span>
+
+<span class="fc" id="L127">        newAnimal.calculateAge();</span>
+<span class="fc" id="L128">        existing.setAge(newAnimal.getAge());</span>
+<span class="fc" id="L129">        existing.setAgeInHumanYears(newAnimal.getAgeInHumanYears());</span>
+<span class="fc" id="L130">        existing.setAnimalDiet(newAnimal.getAnimalDiet());</span>
+<span class="fc" id="L131">    }</span>
+
+    private Animal handleAnimalType(AnimalTypeEnum animalType, LocalDate date) {
+<span class="fc bfc" id="L134" title="All 3 branches covered.">        return switch (animalType) {</span>
+<span class="fc" id="L135">            case CAT -&gt; new Cat(date);</span>
+<span class="fc" id="L136">            case DOG -&gt; new Dog(date);</span>
+<span class="fc" id="L137">            default -&gt; new Animal(date);</span>
+        };
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
