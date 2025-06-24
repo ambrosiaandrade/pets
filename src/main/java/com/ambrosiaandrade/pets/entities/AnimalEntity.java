@@ -26,28 +26,28 @@ public class AnimalEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "animal_name", length = 50, nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
-    @Column(name = "animal_age", length = 3)
+    @Column(length = 3)
     private int age;
-    @Column(name = "age_in_human_years", length = 3)
+    @Column(length = 3)
     private int ageInHumanYears;
     private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "animal_type", length = 20)
-    private AnimalTypeEnum animalType;
+    @Column(length = 20)
+    private AnimalTypeEnum type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "animal_diet", length = 20)
-    private AnimalDietEnum animalDiet;
+    @Column(length = 20)
+    private AnimalDietEnum diet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "animal_gender", length = 20)
-    private AnimalGenderEnum animalGender;
+    @Column(length = 20)
+    private AnimalGenderEnum gender;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDate createdAt;
 
 }

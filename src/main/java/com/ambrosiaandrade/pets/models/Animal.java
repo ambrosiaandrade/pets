@@ -42,26 +42,26 @@ public class Animal implements IAnimal {
 
     @NonNull
     @Schema(description = "Type of the animal", example = "DOG")
-    private AnimalTypeEnum animalType;
+    private AnimalTypeEnum type;
     @Schema(description = "Diet of the animal", example = "OMNIVOROUS")
-    private AnimalDietEnum animalDiet;
+    private AnimalDietEnum diet;
     @Schema(description = "Gender of the animal", example = "FEMALE")
-    private AnimalGenderEnum animalGender;
+    private AnimalGenderEnum gender;
 
     public Animal () {
         this.setBirthday(LocalDate.now());
         calculateAge();
-        this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.OTHER);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.OMNIVOROUS);
+        this.setType(AnimalTypeEnum.OTHER);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
     }
 
     public Animal (LocalDate date) {
         this.setBirthday(date);
         calculateAge(date);
-        this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.OTHER);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.OMNIVOROUS);
+        this.setType(AnimalTypeEnum.OTHER);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
     }
 
     @Override

@@ -73,7 +73,7 @@ public class AnimalService {
     public List<Animal> getAnimalsByType(String type) {
         try {
             AnimalTypeEnum animalType = AnimalTypeEnum.valueOf(type.toUpperCase());
-            List<AnimalEntity> list = animalRepository.findByAnimalType(animalType);
+            List<AnimalEntity> list = animalRepository.findByType(animalType);
             return list.stream().map(animalMapper::toModel).toList();
         } catch (IllegalArgumentException e) {
             log.error("Invalid animal type: " + type);
@@ -112,22 +112,22 @@ public class AnimalService {
     }
 
     private void handleEmptyFields(Animal animal) {
-        Animal newAnimal = handleAnimalType(animal.getAnimalType(), animal.getBirthday());
+        Animal newAnimal = handleAnimalType(animal.getType(), animal.getBirthday());
 
         animal.setAge(newAnimal.getAge());
         animal.setAgeInHumanYears(newAnimal.getAgeInHumanYears());
-        animal.setAnimalDiet(newAnimal.getAnimalDiet());
+        animal.setDiet(newAnimal.getDiet());
     }
 
     private void updateEntityFields(AnimalEntity existing, Animal newAnimal) {
         existing.setName(newAnimal.getName());
         existing.setBirthday(newAnimal.getBirthday());
-        existing.setAnimalType(newAnimal.getAnimalType());
+        existing.setType(newAnimal.getType());
 
         newAnimal.calculateAge();
         existing.setAge(newAnimal.getAge());
         existing.setAgeInHumanYears(newAnimal.getAgeInHumanYears());
-        existing.setAnimalDiet(newAnimal.getAnimalDiet());
+        existing.setDiet(newAnimal.getDiet());
     }
 
     private Animal handleAnimalType(AnimalTypeEnum animalType, LocalDate date) {

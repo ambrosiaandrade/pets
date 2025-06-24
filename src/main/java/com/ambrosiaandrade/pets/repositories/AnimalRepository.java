@@ -14,6 +14,6 @@ import java.util.List;
 @Repository
 public interface AnimalRepository extends JpaRepository<AnimalEntity, Integer> {
 
-    List<AnimalEntity> findByAnimalType(AnimalTypeEnum type);
+    List<AnimalEntity> findByType(AnimalTypeEnum type);
 
 }

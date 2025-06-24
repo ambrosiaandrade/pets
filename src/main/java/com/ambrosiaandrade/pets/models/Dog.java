@@ -17,17 +17,17 @@ import java.time.Period;
 public class Dog extends Animal implements IAnimal {
 
     public Dog() {
-        this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.DOG);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.OMNIVOROUS);
+        this.setType(AnimalTypeEnum.DOG);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(LocalDate.now());
         this.calculateAge();
     }
 
     public Dog(LocalDate birthday) {
-        this.setAnimalDiet(AnimalDietEnum.OMNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.DOG);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.OMNIVOROUS);
+        this.setType(AnimalTypeEnum.DOG);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(birthday);
         this.calculateAge();
     }

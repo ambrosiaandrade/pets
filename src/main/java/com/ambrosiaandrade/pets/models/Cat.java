@@ -22,17 +22,17 @@ import java.time.Period;
 public class Cat extends Animal implements IAnimal {
 
     public Cat() {
-        this.setAnimalDiet(AnimalDietEnum.CARNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.CAT);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.CARNIVOROUS);
+        this.setType(AnimalTypeEnum.CAT);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(LocalDate.now());
         this.calculateAge();
     }
 
     public Cat(LocalDate birthday) {
-        this.setAnimalDiet(AnimalDietEnum.CARNIVOROUS);
-        this.setAnimalType(AnimalTypeEnum.CAT);
-        this.setAnimalGender(AnimalGenderEnum.UNKNOWN);
+        this.setDiet(AnimalDietEnum.CARNIVOROUS);
+        this.setType(AnimalTypeEnum.CAT);
+        this.setGender(AnimalGenderEnum.UNKNOWN);
         this.setBirthday(birthday);
         this.calculateAge();
     }

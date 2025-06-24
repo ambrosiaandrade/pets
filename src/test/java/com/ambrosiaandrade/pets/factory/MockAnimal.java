@@ -25,7 +25,7 @@ public class MockAnimal {
 
         animal.setBirthday(LocalDate.of(2020,1,1));
         animal.setName("Andromache");
-        animal.setAnimalGender(AnimalGenderEnum.FEMALE);
+        animal.setGender(AnimalGenderEnum.FEMALE);
         animal.calculateAge();
 
         return animal;
@@ -43,7 +43,7 @@ public class MockAnimal {
             animal.setName(randomName);
             AnimalGenderEnum[] genders = AnimalGenderEnum.values();
             randomIndex = r.nextInt(genders.length);
-            animal.setAnimalGender(genders[randomIndex]);
+            animal.setGender(genders[randomIndex]);
         });
 
         return animals;
