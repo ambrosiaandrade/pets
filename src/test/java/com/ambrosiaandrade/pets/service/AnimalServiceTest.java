@@ -48,7 +48,6 @@ class AnimalServiceTest {
 
         @Test
         @DisplayName("Save animal - success")
-        @Disabled
         void saveAnimal_success() {
             var animals = MockAnimal.generateAnimals();
 
