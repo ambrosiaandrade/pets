@@ -1,5 +1,7 @@
 package com.ambrosiaandrade.pets.factory;
 
+import com.ambrosiaandrade.pets.entities.AnimalEntity;
+import com.ambrosiaandrade.pets.enums.AnimalDietEnum;
 import com.ambrosiaandrade.pets.enums.AnimalGenderEnum;
 import com.ambrosiaandrade.pets.enums.AnimalTypeEnum;
 import com.ambrosiaandrade.pets.models.Animal;
@@ -72,6 +74,10 @@ public class MockAnimal {
                 "Blue",
                 "Casey"
         );
+    }
+
+    public static AnimalEntity generateEntity() {
+        return new AnimalEntity(1, "bob", 1, 1, LocalDate.now(), AnimalTypeEnum.CAT, AnimalDietEnum.OMNIVOROUS, AnimalGenderEnum.FEMALE, LocalDate.now());
     }
 
 }

@@ -154,17 +154,6 @@
                 </executions>
             </plugin>
 
-            <!-- Runs unit tests and sets up Mockito Java agent (if needed) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>
-                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
-                    </argLine>
-                </configuration>
-            </plugin>
-
             <!-- JaCoCo plugin to measure code coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -242,6 +231,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Runs unit tests and sets up Mockito Java agent (if needed) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${jacoco.argLine}</argLine>                
+                </configuration>
             </plugin>
 
             <!-- Copies the generated JaCoCo report to the static resources folder for frontend access -->
