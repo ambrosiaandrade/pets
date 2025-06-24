@@ -1,0 +1,28 @@
+@startuml
+title ExportController Sequence Diagram
+
+actor User
+participant "ExportController" as Controller
+participant "ExportService" as Service
+
+== Export CSV ==
+User -> Controller: GET /export/csv
+activate Controller
+Controller -> Service: getCsv()
+activate Service
+Service --> Controller: byte[] (CSV data)
+deactivate Service
+Controller --> User: ResponseEntity<byte[]> (CSV file)
+deactivate Controller
+
+== Export PDF ==
+User -> Controller: GET /export/pdf
+activate Controller
+Controller -> Service: getPdf()
+activate Service
+Service --> Controller: byte[] (PDF data)
+deactivate Service
+Controller --> User: ResponseEntity<byte[]> (PDF file)
+deactivate Controller
+
+@enduml

@@ -38,6 +38,7 @@ This project is a comprehensive toolbox application featuring robust CRUD operat
 * **📄 Pagination Support** – Efficiently handle large datasets with pageable endpoints.
 * **⚙️ Asynchronous Endpoints** – Demonstrates how to run non-blocking operations using `CompletableFuture`.
 * **📨 Kafka Integration** – Includes Kafka producers and consumers with example topics and message flow.
+* **📤 Export Controller** – Provides endpoints to export data in various formats (e.g., CSV, PDF), enabling easy data extraction and integration with external systems.
 * **📊 Sequence Diagrams** – Visual documentation of key controller interactions using PlantUML.
 * **🧪 Test Coverage with JaCoCo** – Enforces 80% code coverage and generates readable HTML reports.
 * **🧰 Swagger Integration** – Auto-generated API documentation using SpringDoc OpenAPI.
@@ -54,7 +55,7 @@ This project is a comprehensive toolbox application featuring robust CRUD operat
 
 [![Spring Boot][springboot-shield]][springboot-url] [![Spring Data JPA][jpa-shield]][jpa-url] [![Spring Web][web-shield]][web-url] [![Spring Boot Test][test-shield]][test-url] [![Springdoc OpenAPI][springdoc-shield]][springdoc-url] [![Spring Actuator][actuator-shield]][actuator-url] [![Spring Cache][cache-shield]][cache-url] [![DevTools][devtools-shield]][devtools-url]
 
-[![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Kafka UI][kafbat-shield]][kafbat-url] [![Docker][docker-shield]][docker-url] [![JUnit 5][junit5-shield]][junit5-url] [![Mockito][mockito-shield]][mockito-url] [![Swagger UI][swagger-shield]][swagger-url] [![H2 Database][h2-shield]][h2-url] [![Lombok][lombok-shield]][lombok-url] [![MapStruct][mapstruct-shield]][mapstruct-url]
+[![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Kafka UI][kafbat-shield]][kafbat-url] [![Docker][docker-shield]][docker-url] [![JUnit 5][junit5-shield]][junit5-url] [![Mockito][mockito-shield]][mockito-url] [![Swagger UI][swagger-shield]][swagger-url] [![H2 Database][h2-shield]][h2-url] [![Lombok][lombok-shield]][lombok-url] [![MapStruct][mapstruct-shield]][mapstruct-url] [![OpenCSV][opencsv-shield]][opencsv-url] [![OpenPDF][openpdf-shield]][openpdf-url] ![Coverage](https://img.shields.io/badge/Coverage-80%25-brightgreen?style=for-the-badge&logo=jacoco)
 
 ##### Maven
 
@@ -363,8 +364,19 @@ src/
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)
     ![swagger-ui](./images/swagger-ui.png) 
 
+    <details>
+
+    ![1-controller](./images/1-controller.png)
+    ![2-controller](./images/2-controller.png)
+    ![3-controller](./images/3-controller.png)
+    ![4-controller](./images/4-controller.png)
+    ![5-controller](./images/5-controller.png)
+
+    </details>
+
 - [H2 Console](http://localhost:8080/h2-console/)
-    ![h2-console](./images/h2-console.png) 
+  - Password: sa
+  ![h2-console](./images/h2-console.png) 
 
 - [Kafka UI](http://localhost:8081)
     ![kafbat-ui](./images/kafbat-ui.png)  
@@ -377,7 +389,6 @@ Editable .puml files can be found at `./docs` folder.
 <summary><b>Animal Controller</b></summary>
 
   ![sequence-diagram-animal-controller](./docs/sequence-diagram-animal-controller.png)
-
 </details>
 
 <details>
@@ -400,6 +411,13 @@ This controller serves as a demonstration of asynchronous processing in Java. It
 <summary><b>Kafka Controller</b></summary>
 
   ![sequence-diagram-kafka-controller](./docs/sequence-diagram-kafka-controller.png)
+
+</details>
+
+<details>
+<summary><b>Export Controller</b></summary>
+
+  ![sequence-diagram-export-controller](./docs/sequence-diagram-export-controller.png)
 
 </details>
 
@@ -500,6 +518,12 @@ This project is licensed under the **[MIT License](LICENSE)** — see the file f
 
 [devtools-shield]: https://img.shields.io/badge/DevTools-6DB33F?style=for-the-badge&logo=spring&logoColor=white
 [devtools-url]: https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools
+
+[opencsv-shield]: https://img.shields.io/badge/OpenCSV-4E97A3?style=for-the-badge&logo=csv&logoColor=white
+[opencsv-url]: http://opencsv.sourceforge.net/
+
+[openpdf-shield]: https://img.shields.io/badge/OpenPDF-3776AB?style=for-the-badge&logo=adobeacrobatreader&logoColor=white
+[openpdf-url]: https://github.com/LibrePDF/OpenPDF
 
 <!-- Social media -->
 
