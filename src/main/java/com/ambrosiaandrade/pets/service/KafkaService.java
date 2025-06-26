@@ -7,8 +7,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,13 +43,37 @@ public class KafkaService {
 
     @KafkaListener(
             topics = "${app.kafka.topic}",
-            groupId = "${spring.kafka.consumer.group-id}")
+            groupId = "${spring.kafka.consumer.group-id}",
+            errorHandler = "kafkaErrorHandler")
     public void consume(String message) {
         try {
+            if (message.contains("error")) {
+                throw new RuntimeException("Failed processing message");
+            }
             processMessage(message);
-            log.info("[Kafka] Consumed: {}", message);
+            log.info("[Kafka_consume] Consumed: {}", message);
         } catch (Exception e) {
-            log.error("[Kafka] Failed to process message: {}", message, e);
+            log.error("[Kafka_consume] Failed to process message: {}", message, e);
+        }
+    }
+
+    @RetryableTopic(
+            attempts = "3",
+            backoff = @Backoff(delay = 2000),
+            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE
+    )
+    @KafkaListener(
+            topics = "${app.kafka.topic}",
+            groupId = "${spring.kafka.consumer.group-id}")
+    public void consumeWithRetry(String message) {
+        try {
+            if (message.contains("retry")) {
+                throw new RuntimeException("Temporary failure");
+            }
+            processMessage(message);
+            log.info("[Kafka_consumeWithRetry] Consumed: {}", message);
+        } catch (Exception e) {
+            log.error("[Kafka_consumeWithRetry] Failed to process message: {}", message, e);
         }
     }
 

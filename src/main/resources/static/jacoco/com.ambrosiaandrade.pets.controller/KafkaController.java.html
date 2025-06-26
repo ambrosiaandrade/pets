@@ -12,22 +12,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Tag(name = &quot;4. Kafka Operations&quot;, description = &quot;Operations related to Kafka messaging, including producing and consuming messages.&quot;)
-<span class="fc" id="L24">@Slf4j</span>
+<span class="fc" id="L21">@Slf4j</span>
 @RestController
 @RequestMapping(&quot;/kafka&quot;)
-<span class="fc" id="L27">public class KafkaController {</span>
+<span class="fc" id="L24">public class KafkaController {</span>
 
     @Autowired
     private KafkaService kafkaService;
+
+    private static final String STATUS = &quot;status&quot;;
+    private static final String MESSAGE = &quot;message&quot;;
 
     @Operation(
             summary = &quot;Produce a message to Kafka&quot;,
@@ -56,10 +56,39 @@ import java.util.Map;
 <span class="fc" id="L56">        kafkaService.sendMessage(message);</span>
 
 <span class="fc" id="L58">        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L59">        response.put(&quot;status&quot;, &quot;Message sent&quot;);</span>
-<span class="fc" id="L60">        response.put(&quot;message&quot;, message);</span>
+<span class="fc" id="L59">        response.put(STATUS, &quot;Message sent&quot;);</span>
+<span class="fc" id="L60">        response.put(MESSAGE, message);</span>
 
 <span class="fc" id="L62">        return ResponseEntity.ok(response);</span>
+    }
+
+    @Operation(
+            summary = &quot;Retrieves all messages from Kafka&quot;,
+            description = &quot;Retrieves all the messages from a Kafka topic, from the beginning.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Messages consumed successfully&quot;,
+                    content = @Content(
+                            mediaType = &quot;application/json&quot;,
+                            array = @ArraySchema(schema = @Schema(implementation = String.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;,
+                    content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))
+            )
+    })
+    @GetMapping(&quot;/consumer&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; kafkaConsume() {
+
+<span class="fc" id="L87">        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L88">        response.put(STATUS, &quot;Message consumed&quot;);</span>
+<span class="fc" id="L89">        response.put(MESSAGE, kafkaService.getMessages().toString());</span>
+
+<span class="fc" id="L91">        return ResponseEntity.ok(response);</span>
     }
 
     @Operation(
@@ -81,15 +110,15 @@ import java.util.Map;
                     content = @Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = String.class))
             )
     })
-    @GetMapping(&quot;/consumer&quot;)
-    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; kafkaConsume() {
+    @GetMapping(&quot;/consumer/{number}&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; kafkaConsume(@PathVariable int number) {
 
-<span class="fc" id="L87">        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L88">        response.put(&quot;status&quot;, &quot;Message consumed&quot;);</span>
-<span class="fc" id="L89">        response.put(&quot;message&quot;, kafkaService.getMessages().toString());</span>
+<span class="nc" id="L116">        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L117">        response.put(STATUS, &quot;Message consumed&quot;);</span>
+<span class="nc" id="L118">        response.put(MESSAGE, kafkaService.fetchMessagesFromKafka(number).toString());</span>
 
-<span class="fc" id="L91">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L120">        return ResponseEntity.ok(response);</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

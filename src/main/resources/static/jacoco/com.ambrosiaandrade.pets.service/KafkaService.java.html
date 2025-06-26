@@ -1,55 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KafkaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.service</a> &gt; <span class="el_source">KafkaService.java</span></div><h1>KafkaService.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@Slf4j
+<span class="fc" id="L20">@Slf4j</span>
 @Service
-<span class="fc" id="L15">public class KafkaService {</span>
+<span class="fc" id="L22">public class KafkaService {</span>
 
-<span class="fc" id="L17">    @Autowired</span>
+    @Autowired
     private KafkaTemplate&lt;String, String&gt; kafkaTemplate;
 
-    private final List&lt;String&gt; messages = new CopyOnWriteArrayList&lt;&gt;();
+    @Autowired
+    private ConsumerFactory&lt;String, String&gt; consumerFactory;
 
-<span class="fc" id="L22">    @Value(&quot;${app.kafka.topic}&quot;)</span>
+<span class="fc" id="L30">    private final List&lt;String&gt; messages = new CopyOnWriteArrayList&lt;&gt;();</span>
+
+    @Value(&quot;${app.kafka.topic}&quot;)
     private String TOPIC;
 
     public void sendMessage(String message) {
-        kafkaTemplate.send(TOPIC, message)
-                .thenAccept(result -&gt; log.info(&quot;[Kafka] Message sent successfully: {}&quot;, message))
-<span class="fc" id="L28">                .exceptionally(ex -&gt; {</span>
-<span class="fc" id="L29">                    log.error(&quot;[Kafka] Failed to send message: {}&quot;, message, ex);</span>
-<span class="fc" id="L30">                    return null;</span>
-<span class="fc" id="L31">                });</span>
-<span class="fc" id="L32">    }</span>
+<span class="fc" id="L36">        kafkaTemplate.send(TOPIC, message)</span>
+<span class="fc" id="L37">                .thenAccept(result -&gt; log.info(&quot;[Kafka] Message sent successfully: {}&quot;, message))</span>
+<span class="fc" id="L38">                .exceptionally(ex -&gt; {</span>
+<span class="fc" id="L39">                    log.error(&quot;[Kafka] Failed to send message: {}&quot;, message, ex);</span>
+<span class="fc" id="L40">                    return null;</span>
+                });
+<span class="fc" id="L42">    }</span>
 
-<span class="fc" id="L34">    @KafkaListener(</span>
+    @KafkaListener(
             topics = &quot;${app.kafka.topic}&quot;,
-            groupId = &quot;${spring.kafka.consumer.group-id}&quot;)
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;,
+            errorHandler = &quot;kafkaErrorHandler&quot;)
     public void consume(String message) {
         try {
-            addMessage(message);
-            log.info(&quot;[Kafka] Consumed: {}&quot;, message);
-<span class="fc" id="L41">        } catch (Exception e) {</span>
-<span class="fc" id="L42">            log.error(&quot;[Kafka] Failed to process message: {}&quot;, message, e);</span>
-<span class="fc" id="L43">        }</span>
-<span class="fc" id="L44">    }</span>
-<span class="fc" id="L45"></span>
-<span class="fc" id="L46">    protected void addMessage(String message) {</span>
-        messages.add(message);
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">            if (message.contains(&quot;error&quot;)) {</span>
+<span class="nc" id="L51">                throw new RuntimeException(&quot;Failed processing message&quot;);</span>
+            }
+<span class="fc" id="L53">            processMessage(message);</span>
+<span class="fc" id="L54">            log.info(&quot;[Kafka_consume] Consumed: {}&quot;, message);</span>
+<span class="fc" id="L55">        } catch (Exception e) {</span>
+<span class="fc" id="L56">            log.error(&quot;[Kafka_consume] Failed to process message: {}&quot;, message, e);</span>
+<span class="fc" id="L57">        }</span>
+<span class="fc" id="L58">    }</span>
+
+    @RetryableTopic(
+            attempts = &quot;3&quot;,
+            backoff = @Backoff(delay = 2000),
+            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE
+    )
+    @KafkaListener(
+            topics = &quot;${app.kafka.topic}&quot;,
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;)
+    public void consumeWithRetry(String message) {
+        try {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (message.contains(&quot;retry&quot;)) {</span>
+<span class="nc" id="L71">                throw new RuntimeException(&quot;Temporary failure&quot;);</span>
+            }
+<span class="nc" id="L73">            processMessage(message);</span>
+<span class="nc" id="L74">            log.info(&quot;[Kafka_consumeWithRetry] Consumed: {}&quot;, message);</span>
+<span class="nc" id="L75">        } catch (Exception e) {</span>
+<span class="nc" id="L76">            log.error(&quot;[Kafka_consumeWithRetry] Failed to process message: {}&quot;, message, e);</span>
+<span class="nc" id="L77">        }</span>
+<span class="nc" id="L78">    }</span>
+
+    protected void processMessage(String message) {
+<span class="fc" id="L81">        messages.add(message);</span>
+<span class="fc" id="L82">    }</span>
+
+    public List&lt;String&gt; getMessages() {
+<span class="fc" id="L85">        return messages;</span>
     }
-<span class="fc" id="L49"></span>
-<span class="fc" id="L50">    public List&lt;String&gt; getMessages() {</span>
-        return messages;
+
+    public List&lt;String&gt; fetchMessagesFromKafka(int maxMessages) {
+<span class="fc" id="L89">        List&lt;String&gt; fetchedMessages = new java.util.ArrayList&lt;&gt;();</span>
+<span class="fc" id="L90">        KafkaConsumer&lt;String, String&gt; consumer = null;</span>
+        try {
+<span class="fc" id="L92">            consumer = (KafkaConsumer&lt;String, String&gt;) consumerFactory.createConsumer();</span>
+<span class="fc" id="L93">            consumer.subscribe(java.util.Collections.singletonList(TOPIC));</span>
+<span class="fc" id="L94">            consumer.poll(java.time.Duration.ZERO); // força atribuição de partições</span>
+
+<span class="fc" id="L96">            int count = 0;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            while (count &lt; maxMessages) {</span>
+<span class="fc" id="L98">                ConsumerRecords&lt;String, String&gt; records = consumer.poll(java.time.Duration.ofSeconds(2));</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                for (ConsumerRecord&lt;String, String&gt; record : records) {</span>
+<span class="fc" id="L100">                    fetchedMessages.add(record.value());</span>
+<span class="fc" id="L101">                    count++;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">                    if (count &gt;= maxMessages) break;</span>
+<span class="fc" id="L103">                }</span>
+<span class="fc" id="L104">                consumer.commitSync(); // commit offsets after processing</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                if (records.isEmpty()) break;</span>
+<span class="fc" id="L106">            }</span>
+<span class="fc" id="L107">        } catch (Exception e) {</span>
+<span class="fc" id="L108">            log.error(&quot;[Kafka] Error fetching messages from Kafka&quot;, e);</span>
+        } finally {
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">            if (consumer != null) consumer.close();</span>
+        }
+<span class="fc" id="L112">        return fetchedMessages;</span>
     }
-<span class="fc" id="L53"></span>
+
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

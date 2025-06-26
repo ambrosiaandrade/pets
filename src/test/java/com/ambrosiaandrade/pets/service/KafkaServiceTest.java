@@ -94,7 +94,7 @@ class KafkaServiceTest {
 
     @Test
     void testSendMessage_whenKafkaSendFails_shouldLogError() {
-        String message = "fail";
+        String message = "error";
 
         // Simula falha no envio Kafka
         when(kafkaTemplate.send(anyString(), anyString()))
@@ -135,6 +135,22 @@ class KafkaServiceTest {
 
         // Should not throw — just log error
         assertDoesNotThrow(() -> service.consume("test-message"));
+    }
+
+    @Test
+    void testConsumeWithRetry() {
+        KafkaService spyService = spy(kafkaService);
+
+        // O método deve capturar exceção e não lançar
+        assertDoesNotThrow(() -> spyService.consumeWithRetry("y"));
+    }
+
+    @Test
+    void testConsumeWithRetry_exception() {
+        KafkaService spyService = spy(kafkaService);
+
+        // O método deve capturar exceção e não lançar
+        assertDoesNotThrow(() -> spyService.consumeWithRetry("retry"));
     }
 
     @Test
@@ -224,6 +240,7 @@ class KafkaServiceTest {
         assertTrue(result.isEmpty());
         verify(mockConsumer).close();
     }
+
     // Helper method to access private fields via reflection
     private static java.lang.reflect.Field getField(Class<?> clazz, String fieldName) {
         try {
