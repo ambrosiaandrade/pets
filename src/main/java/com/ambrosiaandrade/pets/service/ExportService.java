@@ -66,6 +66,8 @@ public class ExportService {
     public byte[] getPdf() {
         var list = fetchAnimals();
 
+        // try-with-resources to ensure resources are closed properly
+        // Using ByteArrayOutputStream to write the PDF content in memory
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Document doc = new Document();
             PdfWriter.getInstance(doc, baos);
