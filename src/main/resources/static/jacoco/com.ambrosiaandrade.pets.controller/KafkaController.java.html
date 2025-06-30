@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KafkaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.controller</a> &gt; <span class="el_source">KafkaController.java</span></div><h1>KafkaController.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.controller;
 
-import com.ambrosiaandrade.pets.service.KafkaService;
+import com.ambrosiaandrade.pets.service.KafkaProducerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -52,8 +52,8 @@ import java.util.Map;
             )
     })
     @GetMapping(&quot;/producer&quot;)
-    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; kafkaProduce(@RequestParam(defaultValue = &quot;Hello kafka&quot;) String message) {
-<span class="fc" id="L56">        kafkaService.sendMessage(message);</span>
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; kafkaProduce(@RequestParam(defaultValue = &quot;Hello kafka&quot;) String message, @RequestParam(required = false, defaultValue = &quot;false&quot;) boolean retry) {
+<span class="fc" id="L56">        kafkaService.send(message, retry);</span>
 
 <span class="fc" id="L58">        Map&lt;String, String&gt; response = new HashMap&lt;&gt;();</span>
 <span class="fc" id="L59">        response.put(STATUS, &quot;Message sent&quot;);</span>

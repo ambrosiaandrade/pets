@@ -1,6 +1,8 @@
 package com.ambrosiaandrade.pets.controller;
 
-import com.ambrosiaandrade.pets.service.KafkaService;
+import com.ambrosiaandrade.pets.listener.MyKafkaListener;
+import com.ambrosiaandrade.pets.service.KafkaConsumerService;
+import com.ambrosiaandrade.pets.service.KafkaProducerService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +25,20 @@ class KafkaControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private KafkaService kafkaService;
+    private KafkaProducerService kafkaProducerService;
+
+    @MockitoBean
+    private KafkaConsumerService kafkaConsumerService;
+
+    @MockitoBean
+    private MyKafkaListener listener;
 
     @Nested
     class Kafka {
 
         @Test
         void kafkaProduce() throws Exception {
-            doNothing().when(kafkaService).sendMessage(anyString());
+            doNothing().when(kafkaProducerService).send(anyString(), anyBoolean());
 
             mockMvc.perform(
                             get("/kafka/producer")
@@ -39,12 +47,12 @@ class KafkaControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk());
 
-            verify(kafkaService, times(1)).sendMessage(anyString());
+            verify(kafkaProducerService, times(1)).send(anyString(), anyBoolean());
         }
 
         @Test
         void kafkaConsume() throws Exception {
-            when(kafkaService.getMessages()).thenReturn(List.of("Hello kafka", "test 1"));
+            when(listener.getMessages()).thenReturn(List.of("Hello kafka", "test 1"));
 
             mockMvc.perform(
                             get("/kafka/consumer")
@@ -52,7 +60,7 @@ class KafkaControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk());
 
-            verify(kafkaService, times(1)).getMessages();
+            verify(listener, times(1)).getMessages();
         }
 
     }

@@ -1,5 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-pets,com.ambrosiaandrade.pets.service,KafkaService,29,136,4,10,9,39,4,13,1,9
+pets,com.ambrosiaandrade.pets.service,KafkaService,110,171,3,13,21,52,6,16,3,11
 pets,com.ambrosiaandrade.pets.service,AdvanceUtil,0,136,0,5,0,28,0,13,0,10
 pets,com.ambrosiaandrade.pets.service,ExportService,14,270,0,4,4,60,0,7,0,5
 pets,com.ambrosiaandrade.pets.service,AnimalService,0,325,0,3,0,71,0,17,0,15
@@ -8,5 +8,5 @@ pets,com.ambrosiaandrade.pets.service,AsyncService,0,30,0,0,0,10,0,4,0,4
 pets,com.ambrosiaandrade.pets.controller,ExportController,0,52,0,0,0,13,0,3,0,3
 pets,com.ambrosiaandrade.pets.controller,AnimalController,0,67,0,0,0,16,0,7,0,7
 pets,com.ambrosiaandrade.pets.controller,AsyncController,0,37,0,4,0,10,0,7,0,5
-pets,com.ambrosiaandrade.pets.controller,KafkaController,21,48,0,0,4,11,1,4,1,4
+pets,com.ambrosiaandrade.pets.controller,KafkaController,21,49,0,0,4,11,1,4,1,4
 pets,com.ambrosiaandrade.pets.controller,PaginationController,0,49,0,2,0,12,0,7,0,6
