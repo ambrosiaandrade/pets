@@ -81,15 +81,19 @@ You should have the following installed in your machine:
 ### 🚀 Demo
 
 You can check the [Pet Project here](demo-url)
-![home-page-2](./images/home-page-2.png)
-
-Watch a short local demo video demonstrating the interaction between Swagger and Kafbat UI: [View MP4](images/showcase-kafka-kafbat_ui.mp4)
-
-![home-page-1](./images/home-page-1.png)
 
 The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
 
 _PS: Kafka UI is available only when running locally (i.e., using the dev Spring profile with Docker Compose). In production, Kafka is disabled._
+
+Interaction between Swagger and Kafbat UI:
+![showcase-kafka-kafbat_ui](images/showcase-kafka-kafbat_ui.gif)
+
+Localhost
+![home-page-1](./images/home-page-1.png)
+Deployed
+![home-page-2](./images/home-page-2.png)
+
 
 ### 🏗️ Folder Structure
 ```bash
