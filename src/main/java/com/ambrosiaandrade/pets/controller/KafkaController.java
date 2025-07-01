@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Tag(name = "4. Kafka Operations", description = "Operations related to Kafka messaging, including producing and consuming messages.")
+@Tag(name = "5. Kafka Operations", description = "Operations related to Kafka messaging, including producing and consuming messages.")
 @Slf4j
 @Profile("dev")
 @RestController
