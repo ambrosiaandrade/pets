@@ -87,7 +87,7 @@ You should have the following installed in your machine:
 
 You can check the [Pet Project here](demo-url)
 
-Watch a short local demo video demonstrating the interaction between Swagger and Kafbat UI: [View MP4](.images/showcase-kafka-kafbat_ui.mp4)
+Watch a short local demo video demonstrating the interaction between Swagger and Kafbat UI: [View MP4](images/showcase-kafka-kafbat_ui.mp4)
 
 ![home-page](./images/home-page.png)
 The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
