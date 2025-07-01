@@ -123,7 +123,10 @@ src/
     </details>
 
 - [H2 Console](http://localhost:8080/h2-console/)
+  - URL: jdbc:h2:mem:testdb
+  - User name: sa
   - Password: sa
+
   ![h2-console](./images/h2-console.png) 
 
 - [Kafka UI](http://localhost:8081)
@@ -208,7 +211,7 @@ This project is licensed under the **[MIT License](LICENSE)** — see the file f
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[demo-url]: http://localhost:8080/
+[demo-url]: https://pets-00xb.onrender.com
 
 [springboot-shield]: https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white
 [springboot-url]: https://spring.io/projects/spring-boot

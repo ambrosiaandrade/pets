@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @Tag(name = "4. Kafka Operations", description = "Operations related to Kafka messaging, including producing and consuming messages.")
 @Slf4j
+@Profile("dev")
 @RestController
 @RequestMapping("/kafka")
 public class KafkaController {
