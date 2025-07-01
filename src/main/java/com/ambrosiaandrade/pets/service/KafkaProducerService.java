@@ -14,14 +14,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaProducerService {
 
-    @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Autowired
     private RetryTemplate retryTemplate;
 
     @Value("${app.kafka.topic}")
     private String TOPIC;
+
+    public KafkaProducerService(RetryTemplate retryTemplate, KafkaTemplate<String, String> kafkaTemplate) {
+        this.retryTemplate = retryTemplate;
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void send(String message, boolean retry) {
         if (retry) {

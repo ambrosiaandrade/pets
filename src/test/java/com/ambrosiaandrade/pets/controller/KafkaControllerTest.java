@@ -63,6 +63,19 @@ class KafkaControllerTest {
             verify(listener, times(1)).getMessages();
         }
 
+        @Test
+        void kafkaRealConsumer() throws Exception {
+            when(listener.getMessages()).thenReturn(List.of("Hello kafka", "test 1"));
+
+            mockMvc.perform(
+                            get("/kafka/consumer/{number}", 1)
+                    )
+                    .andDo(print())
+                    .andExpect(status().isOk());
+
+            verify(kafkaConsumerService, times(1)).fetchMessagesFromKafka(1);
+        }
+
     }
 
 }
