@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "5. Export controller", description = "Controller for exporting data in different formats")
+@Tag(name = "4. Export controller", description = "Controller for exporting data in different formats")
 @RestController
 @RequestMapping("/export")
 public class ExportController {

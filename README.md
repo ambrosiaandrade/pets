@@ -69,7 +69,7 @@ You should have the following installed in your machine:
 
 ##### Usage
 
-- Start the services with docker before running Spring Boot Application, at project's root folder run the command:
+- Start the services with docker, at project's root folder run the command:
     ```sh
     docker-compose up --build
     ```
@@ -78,19 +78,18 @@ You should have the following installed in your machine:
     ![docker-ps](./images/docker-ps.png)
     _OBS: Note: Kafbat is a web-based UI for managing Apache Kafka topics and messages._
 
-- Build the project:
-    ```sh
-    mvn clean package
-    ```
-
 ### 🚀 Demo
 
 You can check the [Pet Project here](demo-url)
+![home-page-2](./images/home-page-2.png)
 
 Watch a short local demo video demonstrating the interaction between Swagger and Kafbat UI: [View MP4](images/showcase-kafka-kafbat_ui.mp4)
 
-![home-page](./images/home-page.png)
+![home-page-1](./images/home-page-1.png)
+
 The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
+
+_PS: Kafka UI is available only when running locally (i.e., using the dev Spring profile with Docker Compose). In production, Kafka is disabled._
 
 ### 🏗️ Folder Structure
 ```bash
@@ -123,7 +122,10 @@ src/
     </details>
 
 - [H2 Console](http://localhost:8080/h2-console/)
+  - URL: jdbc:h2:mem:testdb
+  - User name: sa
   - Password: sa
+
   ![h2-console](./images/h2-console.png) 
 
 - [Kafka UI](http://localhost:8081)
@@ -156,16 +158,16 @@ This controller serves as a demonstration of asynchronous processing in Java. It
 </details>
 
 <details>
-<summary><b>Kafka Controller</b></summary>
+<summary><b>Export Controller</b></summary>
 
-  ![sequence-diagram-kafka-controller](./docs/sequence-diagram-kafka-controller.png)
+  ![sequence-diagram-export-controller](./docs/sequence-diagram-export-controller.png)
 
 </details>
 
 <details>
-<summary><b>Export Controller</b></summary>
+<summary><b>Kafka Controller</b></summary>
 
-  ![sequence-diagram-export-controller](./docs/sequence-diagram-export-controller.png)
+![sequence-diagram-kafka-controller](./docs/sequence-diagram-kafka-controller.png)
 
 </details>
 
@@ -208,7 +210,7 @@ This project is licensed under the **[MIT License](LICENSE)** — see the file f
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[demo-url]: http://localhost:8080/
+[demo-url]: https://pets-00xb.onrender.com
 
 [springboot-shield]: https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white
 [springboot-url]: https://spring.io/projects/spring-boot

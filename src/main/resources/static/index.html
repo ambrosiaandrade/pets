@@ -21,6 +21,11 @@
         const kafbatHost = location.hostname;
         const kafbatUrl = `http://${kafbatHost}:${kafbatPort}`;
         document.getElementById('kafbat-link').href = kafbatUrl;
+
+        let isLocalhost = kafbatUrl.startsWith("http://localhost");
+        if (!isLocalhost) {
+          document.getElementById('kafbat-link').style.display = 'none';
+        }
     </script>
 
      <link rel="stylesheet" href="styles.css">

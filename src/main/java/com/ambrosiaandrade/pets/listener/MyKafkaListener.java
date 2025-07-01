@@ -1,6 +1,7 @@
 package com.ambrosiaandrade.pets.listener;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
+@Profile("dev")
 @Component
 public class MyKafkaListener {
 
