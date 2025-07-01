@@ -118,6 +118,31 @@ class ExportServiceTest {
     }
 
     @Test
+    void getCsv_handlesIOException() {
+        ExportService faultyService = new ExportService(repository, mapper) {
+            @Override
+            public byte[] getCsv() {
+                StringWriter stringWriter = new StringWriter();
+                CSVWriter csvWriter = new CSVWriter(stringWriter) {
+                    @Override
+                    public void close() throws IOException {
+                        throw new IOException("Test IO Exception");
+                    }
+                };
+                csvWriter.writeNext(new String[]{"name"});
+                try {
+                    csvWriter.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Erro ao gerar CSV", e);
+                }
+                return stringWriter.toString().getBytes();
+            }
+        };
+
+        assertThrows(RuntimeException.class, faultyService::getCsv);
+    }
+
+    @Test
     void database_error() {
         when(repository.findAll()).thenThrow(new DataAccessException("Error"){});
 

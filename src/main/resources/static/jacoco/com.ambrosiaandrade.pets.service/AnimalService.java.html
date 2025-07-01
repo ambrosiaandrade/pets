@@ -73,7 +73,7 @@ public class AnimalService {
     public List&lt;Animal&gt; getAnimalsByType(String type) {
         try {
 <span class="fc" id="L75">            AnimalTypeEnum animalType = AnimalTypeEnum.valueOf(type.toUpperCase());</span>
-<span class="fc" id="L76">            List&lt;AnimalEntity&gt; list = animalRepository.findByAnimalType(animalType);</span>
+<span class="fc" id="L76">            List&lt;AnimalEntity&gt; list = animalRepository.findByType(animalType);</span>
 <span class="fc" id="L77">            return list.stream().map(animalMapper::toModel).toList();</span>
 <span class="fc" id="L78">        } catch (IllegalArgumentException e) {</span>
 <span class="fc" id="L79">            log.error(&quot;Invalid animal type: &quot; + type);</span>
@@ -112,22 +112,22 @@ public class AnimalService {
     }
 
     private void handleEmptyFields(Animal animal) {
-<span class="fc" id="L115">        Animal newAnimal = handleAnimalType(animal.getAnimalType(), animal.getBirthday());</span>
+<span class="fc" id="L115">        Animal newAnimal = handleAnimalType(animal.getType(), animal.getBirthday());</span>
 
 <span class="fc" id="L117">        animal.setAge(newAnimal.getAge());</span>
 <span class="fc" id="L118">        animal.setAgeInHumanYears(newAnimal.getAgeInHumanYears());</span>
-<span class="fc" id="L119">        animal.setAnimalDiet(newAnimal.getAnimalDiet());</span>
+<span class="fc" id="L119">        animal.setDiet(newAnimal.getDiet());</span>
 <span class="fc" id="L120">    }</span>
 
     private void updateEntityFields(AnimalEntity existing, Animal newAnimal) {
 <span class="fc" id="L123">        existing.setName(newAnimal.getName());</span>
 <span class="fc" id="L124">        existing.setBirthday(newAnimal.getBirthday());</span>
-<span class="fc" id="L125">        existing.setAnimalType(newAnimal.getAnimalType());</span>
+<span class="fc" id="L125">        existing.setType(newAnimal.getType());</span>
 
 <span class="fc" id="L127">        newAnimal.calculateAge();</span>
 <span class="fc" id="L128">        existing.setAge(newAnimal.getAge());</span>
 <span class="fc" id="L129">        existing.setAgeInHumanYears(newAnimal.getAgeInHumanYears());</span>
-<span class="fc" id="L130">        existing.setAnimalDiet(newAnimal.getAnimalDiet());</span>
+<span class="fc" id="L130">        existing.setDiet(newAnimal.getDiet());</span>
 <span class="fc" id="L131">    }</span>
 
     private Animal handleAnimalType(AnimalTypeEnum animalType, LocalDate date) {
@@ -139,4 +139,4 @@ public class AnimalService {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

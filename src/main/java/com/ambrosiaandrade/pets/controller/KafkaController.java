@@ -1,6 +1,8 @@
 package com.ambrosiaandrade.pets.controller;
 
-import com.ambrosiaandrade.pets.service.KafkaService;
+import com.ambrosiaandrade.pets.listener.MyKafkaListener;
+import com.ambrosiaandrade.pets.service.KafkaConsumerService;
+import com.ambrosiaandrade.pets.service.KafkaProducerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,11 +25,18 @@ import java.util.Map;
 @RequestMapping("/kafka")
 public class KafkaController {
 
-    @Autowired
-    private KafkaService kafkaService;
+    private KafkaProducerService kafkaProducerService;
+    private KafkaConsumerService kafkaConsumerService;
+    private MyKafkaListener listener;
 
     private static final String STATUS = "status";
     private static final String MESSAGE = "message";
+
+    public KafkaController(KafkaProducerService kafkaProducerService, KafkaConsumerService kafkaConsumerService, MyKafkaListener listener) {
+        this.kafkaProducerService = kafkaProducerService;
+        this.kafkaConsumerService = kafkaConsumerService;
+        this.listener = listener;
+    }
 
     @Operation(
             summary = "Produce a message to Kafka",
@@ -52,8 +61,8 @@ public class KafkaController {
             )
     })
     @GetMapping("/producer")
-    public ResponseEntity<Map<String, String>> kafkaProduce(@RequestParam(defaultValue = "Hello kafka") String message) {
-        kafkaService.sendMessage(message);
+    public ResponseEntity<Map<String, String>> kafkaProduce(@RequestParam(defaultValue = "Hello kafka") String message, @RequestParam(required = false, defaultValue = "false") boolean retry) {
+        kafkaProducerService.send(message, retry);
 
         Map<String, String> response = new HashMap<>();
         response.put(STATUS, "Message sent");
@@ -86,7 +95,7 @@ public class KafkaController {
 
         Map<String, String> response = new HashMap<>();
         response.put(STATUS, "Message consumed");
-        response.put(MESSAGE, kafkaService.getMessages().toString());
+        response.put(MESSAGE, listener.getMessages().toString());
 
         return ResponseEntity.ok(response);
     }
@@ -115,7 +124,7 @@ public class KafkaController {
 
         Map<String, String> response = new HashMap<>();
         response.put(STATUS, "Message consumed");
-        response.put(MESSAGE, kafkaService.fetchMessagesFromKafka(number).toString());
+        response.put(MESSAGE, kafkaConsumerService.fetchMessagesFromKafka(number).toString());
 
         return ResponseEntity.ok(response);
     }
