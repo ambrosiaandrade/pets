@@ -5,8 +5,9 @@ services:
     container_name: kafka
     hostname: kafka  # Nome que os outros containers usarão para se conectar
     ports:
-      - "9092:9092"  # Porta exposta para o host (localhost)
-      - "9093:9093"  # Porta de controle do KRaft (não precisa ser exposta)
+      - "9092:9092"   # Porta exposta para o host (localhost)
+      - "9093:9093"   # Porta de controle do KRaft (não precisa ser exposta)
+      - "29092:29092" # Porta fora do docker
     environment:
       # Habilita o modo KRaft (dispensa Zookeeper)
       KAFKA_KRAFT_MODE: "true"
@@ -21,19 +22,19 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
 
       # Define os listeners: onde o Kafka escuta conexões
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_LISTENERS: PLAINTEXT_INTERNAL://0.0.0.0:9092,PLAINTEXT_EXTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
 
       # Mapeia nomes de listeners para protocolos de segurança
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
 
       # Define o listener que os brokers usarão para falar entre si
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
 
       # Define o listener usado para coordenação no modo KRaft
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
       # Anuncia o endereço que os clientes devem usar para se conectar
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://host.docker.internal:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_INTERNAL://kafka:9092,PLAINTEXT_EXTERNAL://localhost:29092
 
       # Caminho para persistência dos dados (logs, tópicos, etc)
       KAFKA_LOG_DIRS: /var/lib/kafka/data
@@ -59,14 +60,29 @@ services:
     ports:
       - "8081:8080"  # Acesse via http://localhost:8081
     environment:
+      KAFKA_BROKER: kafka:9092
       # Nome do cluster no painel da UI
       KAFKA_CLUSTERS_0_NAME: local
       # Endereço do broker Kafka acessível pelo nome no Docker
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       # Protocolo usado
       KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT
     networks:
       - kafka-net  # Precisa estar na mesma rede que o Kafka
+
+# Optional: If you want to run your Spring Boot app in Docker later
+#  app:
+#    build: .
+#    container_name: springboot-app
+#    ports:
+#      - "8081:8080"
+#    environment:
+#      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - SPRING_PROFILES_ACTIVE=prod
+#    depends_on:
+#      - kafka
+#    networks:
+#      - kafka-net
 
 volumes:
   kafka-data:  # Volume nomeado para armazenar os dados do Kafka
@@ -74,3 +90,4 @@ volumes:
 networks:
   kafka-net:
     driver: bridge  # Rede Docker para permitir comunicação por hostname
+

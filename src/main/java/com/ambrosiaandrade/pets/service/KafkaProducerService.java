@@ -35,13 +35,13 @@ public class KafkaProducerService {
         kafkaTemplate.send(TOPIC, message)
                 .thenAccept(result -> {
                     var meta = result.getRecordMetadata();
-                    log.info("[Kafka] Message sent successfully to topic: {}, partition: {}, offset: {}, message: {}",
+                    log.info("[Kafka_send] Message sent successfully to topic: {}, partition: {}, offset: {}, message: {}",
                             meta.topic(), meta.partition(), meta.offset(), message);
                 })
                 // If you need to handle retries or await completion elsewhere, consider returning it
                 // return result;
                 .exceptionally(ex -> {
-                    log.error("[Kafka] Failed to send message: " + message, ex);
+                    log.error("[Kafka_send] Failed to send message: " + message, ex);
                     return null;
                 });
     }
@@ -49,15 +49,15 @@ public class KafkaProducerService {
     private void sendMessageWithRetry(String message) {
         RetryCallback<Void, RuntimeException> callback = context -> {
             int attempt = context.getRetryCount() + 1;
-            log.info("[Kafka] Tentativa {} de envio da mensagem: {}", attempt, message);
+            log.info("[Kafka_sendWithRetry] Attempt {} of sending a message: {}", attempt, message);
 
             try {
                 SendResult<String, String> result = kafkaTemplate.send(TOPIC, message).get(); // .get() para propagar exceções
                 var meta = result.getRecordMetadata();
-                log.info("[Kafka] Mensagem enviada com sucesso: topic={}, partition={}, offset={}",
+                log.info("[Kafka_sendWithRetry] Message sent successfully to topic: {}, partition: {}, offset: {}",
                         meta.topic(), meta.partition(), meta.offset());
             } catch (Exception e) {
-                log.warn("[Kafka] Erro ao tentar enviar mensagem na tentativa {}: {}", attempt, e.getMessage());
+                log.warn("[Kafka_sendWithRetry] Error while trying to send message with attempt {}: {}", attempt, e.getMessage());
                 throw new RuntimeException(e); // força o retry
             }
 
@@ -66,7 +66,7 @@ public class KafkaProducerService {
 
         RecoveryCallback<Void> recovery = context -> {
             // Callback final após todas as tentativas falharem
-            log.error("[Kafka] Todas as tentativas de envio falharam para a mensagem: {}", message);
+            log.error("[Kafka_sendWithRetry] All attempts failed of sending a message: {}", message);
             return null;
         };
 
