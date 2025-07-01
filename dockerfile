@@ -6,6 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Faz o build do projeto com Maven
+RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Etapa 2: imagem final com apenas o jar
