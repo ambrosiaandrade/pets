@@ -80,7 +80,7 @@ You should have the following installed in your machine:
 
 ### 🚀 Demo
 
-You can check the [Pet Project here](demo-url)
+You can check the [Pet Project here](https://pets-00xb.onrender.com/)
 
 The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
 
