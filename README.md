@@ -1,6 +1,8 @@
 # Pet Project
 A modern Spring Boot RESTful API project following MVC architecture, featuring Kafka integration, Docker support, automated testing, and CI/CD with GitHub Actions.
 
+> 🇧🇷 Este projeto está disponível em português: [README.pt-BR.md](README.pt-BR.md)
+
 <details>
 <summary><b>Table of contents</b></summary>
   <ol>
