@@ -69,11 +69,68 @@ You should have the following installed in your machine:
 
 ##### Usage
 
-- Start the services with docker, at project's root folder run the command:
-    ```sh
-    docker-compose up --build
-    ```
-    ![docker-compose-up](./images/docker-compose-up.png)
+You can run the project in two ways depending on your development workflow:
+
+---
+
+#### ✅ Option 1: Run Everything with Docker (Spring Boot, Kafka, Kafka UI)
+
+This approach builds and runs the entire stack — including the Spring Boot app, Kafka, and the Kafka UI dashboard — using Docker Compose.
+
+```sh
+docker-compose up --build
+```
+
+This command will:
+
+* Build the Spring Boot application image (`app`)
+* Spin up Kafka and Kafka UI
+* Start everything connected in a shared Docker network
+
+📸 Example:
+![docker-compose-up](./images/docker-compose-up.png)
+
+---
+
+#### 🧪 Option 2: Run Spring Boot Separately (IDE + Docker for Kafka)
+
+This is ideal for local development when you want to **debug or live-code the Spring Boot app in your IDE**, but still need Kafka running in containers.
+
+1. **Comment out the Spring Boot app (`app`) section in `docker-compose.yml`:**
+
+```yaml
+#  app:
+#    build: .
+#    container_name: pet-app
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - SPRING_PROFILES_ACTIVE=dev
+#    depends_on:
+#      - kafka
+#    networks:
+#      - kafka-net
+```
+
+2. **Set the active Spring profile to `dev`** in your `application.properties` (or use your IDE config):
+
+```properties
+spring.profiles.active=dev
+```
+
+3. **Start only Kafka-related services via Docker Compose:**
+
+```sh
+docker-compose up --build
+```
+
+4. **Run the Spring Boot application from your IDE.**
+
+Make sure the profile is set to `dev` and Kafka is accessible via `localhost:9092` or the configured Docker network name (`kafka:9092`).
+
+
+✅ **Result:** You now have a hybrid setup — Kafka running in Docker, Spring Boot running natively. This gives you faster iteration, hot reload support, and full IDE debugging capabilities.
 
 ### 🚀 Demo
 
