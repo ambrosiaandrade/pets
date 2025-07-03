@@ -85,10 +85,7 @@ _Note1: Kafka UI is available only when running locally (i.e., using the dev Spr
 
 _Note2: JaCoCo is only available in production via GitHub Pages. Locally, it can be accessed at ``target/site/jacoco/index.html`` after running tests._
 
-Localhost
-![home-page-1](./images/home-page-1.png)
-Deployed at [Render](https://render.com/)
-![home-page-2](./images/home-page-2.png)
+![home-page](./images/home-page.png)
 
 ### 🗂️ Folder Structure
 
