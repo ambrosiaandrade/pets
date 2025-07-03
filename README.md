@@ -55,7 +55,7 @@ This project is a comprehensive toolbox application featuring robust CRUD operat
 
 [![Spring Boot][springboot-shield]][springboot-url] [![Spring Data JPA][jpa-shield]][jpa-url] [![Spring Web][web-shield]][web-url] [![Spring Boot Test][test-shield]][test-url] [![Springdoc OpenAPI][springdoc-shield]][springdoc-url] [![Spring Actuator][actuator-shield]][actuator-url] [![Spring Cache][cache-shield]][cache-url] [![DevTools][devtools-shield]][devtools-url]
 
-[![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Kafka UI][kafbat-shield]][kafbat-url] [![Docker][docker-shield]][docker-url] [![JUnit 5][junit5-shield]][junit5-url] [![Mockito][mockito-shield]][mockito-url] [![Swagger UI][swagger-shield]][swagger-url] [![H2 Database][h2-shield]][h2-url] [![Lombok][lombok-shield]][lombok-url] [![MapStruct][mapstruct-shield]][mapstruct-url] [![OpenCSV][opencsv-shield]][opencsv-url] [![OpenPDF][openpdf-shield]][openpdf-url] ![Coverage](https://img.shields.io/badge/Coverage-80%25-brightgreen?style=for-the-badge&logo=jacoco)
+[![Java][java-shield]][java-url] [![Maven][maven-shield]][maven-url] [![Kafka][kafka-shield]][kafka-url] [![Kafka UI][kafbat-shield]][kafbat-url] [![Docker][docker-shield]][docker-url] [![JUnit 5][junit5-shield]][junit5-url] [![Mockito][mockito-shield]][mockito-url] [![Swagger UI][swagger-shield]][swagger-url] [![H2 Database][h2-shield]][h2-url] [![Lombok][lombok-shield]][lombok-url] [![MapStruct][mapstruct-shield]][mapstruct-url] [![OpenCSV][opencsv-shield]][opencsv-url] [![OpenPDF][openpdf-shield]][openpdf-url] [![Coverage](https://img.shields.io/badge/Coverage-80%25-brightgreen?style=for-the-badge&logo=jacoco)](https://ambrosiaandrade.github.io/pets/jacoco/index.html)
 
 ### 💡 Getting Started
 
@@ -74,9 +74,6 @@ You should have the following installed in your machine:
     docker-compose up --build
     ```
     ![docker-compose-up](./images/docker-compose-up.png)
-- Ensure that the containers (Kafka and Kafbat UI) are running
-    ![docker-ps](./images/docker-ps.png)
-    _OBS: Note: Kafbat is a web-based UI for managing Apache Kafka topics and messages._
 
 ### 🚀 Demo
 
@@ -84,30 +81,41 @@ You can check the [Pet Project here](https://pets-00xb.onrender.com/)
 
 The `index.html` serves as a lightweight dashboard offering quick access to Swagger, H2 Console, Kafka UI, JaCoCo reports, and the GitHub repo.
 
-_PS: Kafka UI is available only when running locally (i.e., using the dev Spring profile with Docker Compose). In production, Kafka is disabled._
+_Note1: Kafka UI is available only when running locally (i.e., using the dev Spring profile with Docker Compose). In production, Kafka is disabled._
 
-Interaction between Swagger and Kafbat UI:
-![showcase-kafka-kafbat_ui](images/showcase-kafka-kafbat_ui.gif)
+_Note2: JaCoCo is only available in production via GitHub Pages. Locally, it can be accessed at ``target/site/jacoco/index.html`` after running tests._
 
 Localhost
 ![home-page-1](./images/home-page-1.png)
-Deployed
+Deployed at [Render](https://render.com/)
 ![home-page-2](./images/home-page-2.png)
 
+### 🗂️ Folder Structure
 
-### 🏗️ Folder Structure
+The project follows a clean, modular organization based on MVC principles:
+
 ```bash
 src/
-├── main/
-│   ├── java/
-│   │   └── com/ambrosiaandrade/pets/
-│   │       ├── controller/
-│   │       ├── service/
-│   │       ├── model/
-│   │       └── ...
-│   └── resources/
-│       └── static/
-└── test/
+└── main/
+    ├── java/com/ambrosiaandrade/pets/
+    │   ├── config/         # Spring configuration classes
+    │   ├── controller/     # REST controllers (web layer)
+    │   ├── entities/       # JPA entities
+    │   ├── enums/          # Domain enumerations
+    │   ├── exceptions/     # Custom exception classes
+    │   ├── interfaces/     # Mapper and service interfaces
+    │   ├── listener/       # Event listeners
+    │   ├── models/         # DTOs and domain models
+    │   ├── repositories/   # Spring Data JPA interfaces
+    │   ├── service/        # Business logic layer
+    │   └── PetsApplication # Main Spring Boot application class
+    └── resources/
+        ├── static/         # Static assets (index.html, CSS, favicon)
+        ├── application.properties
+        ├── application-dev.properties
+        ├── application-prod.properties
+        └── data.sql        # Sample data initialization
+
 ```
 
 ### 🔗 Useful Links
@@ -178,7 +186,7 @@ This controller serves as a demonstration of asynchronous processing in Java. It
 ### 🧪 Testing
 
 This project uses JUnit and Spring Boot Test for unit testing, along with Mockito for mocking dependencies.  
-Code coverage is enforced with JaCoCo (80% minimum threshold), and the report is generated under `/static/jacoco/index.html`.
+Code coverage is enforced with JaCoCo (80% minimum threshold), and the report is generated under `target/site/jacoco/index.html` locally or `https://ambrosiaandrade.github.io/pets/jacoco/index.html` in production.
 
 To run tests:
 ```sh
@@ -192,8 +200,6 @@ Every push and pull request triggers the workflow to:
 
 - Build the project
 - Run all tests and enforce code coverage
-- Build and (optionally) push Docker images
-- (Optionally) Deploy to your server or cloud
 
 You can find the workflow definition in [`.github/workflows/`](.github/workflows/) in this repository.
 
@@ -211,6 +217,13 @@ Contributions are welcome! If you'd like to help improve this project, feel free
 ### 📝 License
 
 This project is licensed under the **[MIT License](LICENSE)** — see the file for details.
+
+---
+> Built with ❤️ using Spring Boot 3, MapStruct, Kafka, Docker, and CI/CD.  
+> Ideal for learning, reference, or as a professional microservice template.
+
+[![GitHub Stars](https://img.shields.io/github/stars/ambrosiaandrade/pets?style=social)](https://github.com/ambrosiaandrade/pets/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/ambrosiaandrade/pets?color=informational)](https://github.com/ambrosiaandrade/pets)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
