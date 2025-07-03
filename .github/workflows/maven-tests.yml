@@ -47,3 +47,4 @@ jobs:
           publish_dir: ./target/site/jacoco
           publish_branch: gh-pages
           destination_dir: jacoco
+          force_orphan: true
