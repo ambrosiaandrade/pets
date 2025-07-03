@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MyKafkaListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.listener</a> &gt; <span class="el_source">MyKafkaListener.java</span></div><h1>MyKafkaListener.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.listener;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+<span class="fc" id="L14">@Slf4j</span>
+@Profile(&quot;dev&quot;)
+@Component
+<span class="fc" id="L17">public class MyKafkaListener {</span>
+
+<span class="fc" id="L19">    private final List&lt;String&gt; messages = new CopyOnWriteArrayList&lt;&gt;();</span>
+
+    @KafkaListener(
+            topics = &quot;${app.kafka.topic}&quot;,
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;)
+    public void consume(String message) {
+        try {
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">            if (message.contains(&quot;error&quot;)) {</span>
+<span class="nc" id="L27">                throw new RuntimeException(&quot;Failed processing message&quot;);</span>
+            }
+<span class="fc" id="L29">            processMessage(message);</span>
+<span class="fc" id="L30">            log.info(&quot;[Kafka_consume] Consumed: {}&quot;, message);</span>
+<span class="nc" id="L31">        } catch (Exception e) {</span>
+<span class="nc" id="L32">            log.error(&quot;[Kafka_consume] Failed to process message: {}&quot;, message, e);</span>
+<span class="fc" id="L33">        }</span>
+<span class="fc" id="L34">    }</span>
+
+    @RetryableTopic(
+            attempts = &quot;3&quot;,
+            backoff = @Backoff(delay = 2000),
+            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE
+    )
+    @KafkaListener(
+            topics = &quot;${app.kafka.topic}&quot;,
+            groupId = &quot;${spring.kafka.consumer.group-id}&quot;)
+    public void consumeWithRetry(String message) {
+        try {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (message.contains(&quot;retry&quot;)) {</span>
+<span class="fc" id="L47">                throw new RuntimeException(&quot;Temporary failure&quot;);</span>
+            }
+<span class="fc" id="L49">            processMessage(message);</span>
+<span class="fc" id="L50">            log.info(&quot;[Kafka_consumeWithRetry] Consumed: {}&quot;, message);</span>
+<span class="fc" id="L51">        } catch (Exception e) {</span>
+<span class="fc" id="L52">            log.error(&quot;[Kafka_consumeWithRetry] Failed to process message: {}&quot;, message, e);</span>
+<span class="fc" id="L53">        }</span>
+<span class="fc" id="L54">    }</span>
+
+    private void processMessage(String message) {
+<span class="fc" id="L57">        messages.add(message);</span>
+<span class="fc" id="L58">    }</span>
+
+    public List&lt;String&gt; getMessages() {
+<span class="fc" id="L61">        return messages;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

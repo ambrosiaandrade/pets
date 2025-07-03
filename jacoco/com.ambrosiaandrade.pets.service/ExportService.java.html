@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExportService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.service</a> &gt; <span class="el_source">ExportService.java</span></div><h1>ExportService.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.service;
+
+import com.ambrosiaandrade.pets.exceptions.BaseException;
+import com.ambrosiaandrade.pets.interfaces.IAnimalMapper;
+import com.ambrosiaandrade.pets.models.Animal;
+import com.ambrosiaandrade.pets.repositories.AnimalRepository;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import com.opencsv.CSVWriter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+<span class="fc" id="L23">@Slf4j</span>
+@Service
+public class ExportService {
+
+    private final AnimalRepository repository;
+    private final IAnimalMapper mapper;
+
+<span class="fc" id="L30">    public ExportService(AnimalRepository repository, IAnimalMapper mapper) {</span>
+<span class="fc" id="L31">        this.repository = repository;</span>
+<span class="fc" id="L32">        this.mapper = mapper;</span>
+<span class="fc" id="L33">    }</span>
+
+    public byte[] getCsv() {
+<span class="fc" id="L36">        var list = fetchAnimals();</span>
+
+<span class="fc" id="L38">        StringWriter stringWriter = new StringWriter();</span>
+<span class="fc" id="L39">        CSVWriter csvWriter = new CSVWriter(stringWriter);</span>
+
+<span class="fc" id="L41">        String[] header = {&quot;name&quot;, &quot;age&quot;, &quot;age_in_human_years&quot;, &quot;birthday&quot;, &quot;type&quot;, &quot;diet&quot;, &quot;gender&quot;};</span>
+<span class="fc" id="L42">        csvWriter.writeNext(header);</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (Animal animal : list) {</span>
+<span class="fc" id="L45">            String[] line = {</span>
+<span class="fc" id="L46">                    animal.getName(),</span>
+<span class="fc" id="L47">                    String.valueOf(animal.getAge()),</span>
+<span class="fc" id="L48">                    String.valueOf(animal.getAgeInHumanYears()),</span>
+<span class="fc" id="L49">                    String.valueOf(animal.getBirthday()),</span>
+<span class="fc" id="L50">                    animal.getType().name(),</span>
+<span class="fc" id="L51">                    animal.getDiet().name(),</span>
+<span class="fc" id="L52">                    animal.getGender().name()</span>
+            };
+<span class="fc" id="L54">            csvWriter.writeNext(line);</span>
+<span class="fc" id="L55">        }</span>
+
+        try {
+<span class="fc" id="L58">            csvWriter.close();</span>
+<span class="nc" id="L59">        } catch (IOException e) {</span>
+<span class="nc" id="L60">            throw new RuntimeException(&quot;Erro ao gerar CSV&quot;, e);</span>
+<span class="fc" id="L61">        }</span>
+
+<span class="fc" id="L63">        return stringWriter.toString().getBytes(StandardCharsets.UTF_8);</span>
+    }
+
+    public byte[] getPdf() {
+<span class="fc" id="L67">        var list = fetchAnimals();</span>
+
+        // try-with-resources to ensure resources are closed properly
+        // Using ByteArrayOutputStream to write the PDF content in memory
+<span class="fc" id="L71">        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {</span>
+<span class="fc" id="L72">            Document doc = new Document();</span>
+<span class="fc" id="L73">            PdfWriter.getInstance(doc, baos);</span>
+<span class="fc" id="L74">            doc.open();</span>
+
+<span class="fc" id="L76">            doc.add(new Paragraph(&quot;Animals report&quot;));</span>
+<span class="fc" id="L77">            doc.add(Chunk.NEWLINE);</span>
+
+<span class="fc" id="L79">            PdfPTable table = new PdfPTable(7);</span>
+<span class="fc" id="L80">            table.setWidthPercentage(100);</span>
+
+<span class="fc" id="L82">            table.addCell(&quot;name&quot;);</span>
+<span class="fc" id="L83">            table.addCell(&quot;age&quot;);</span>
+<span class="fc" id="L84">            table.addCell(&quot;age_in_human_years&quot;);</span>
+<span class="fc" id="L85">            table.addCell(&quot;birthday&quot;);</span>
+<span class="fc" id="L86">            table.addCell(&quot;type&quot;);</span>
+<span class="fc" id="L87">            table.addCell(&quot;diet&quot;);</span>
+<span class="fc" id="L88">            table.addCell(&quot;gender&quot;);</span>
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            for (Animal animal : list) {</span>
+<span class="fc" id="L91">                table.addCell(animal.getName());</span>
+<span class="fc" id="L92">                table.addCell(String.valueOf(animal.getAge()));</span>
+<span class="fc" id="L93">                table.addCell(String.valueOf(animal.getAgeInHumanYears()));</span>
+<span class="fc" id="L94">                table.addCell(String.valueOf(animal.getBirthday()));</span>
+<span class="fc" id="L95">                table.addCell(animal.getType().name());</span>
+<span class="fc" id="L96">                table.addCell(animal.getDiet().name());</span>
+<span class="fc" id="L97">                table.addCell(animal.getGender().name());</span>
+<span class="fc" id="L98">            }</span>
+
+<span class="fc" id="L100">            doc.add(table);</span>
+<span class="fc" id="L101">            doc.close();</span>
+
+<span class="fc" id="L103">            return baos.toByteArray();</span>
+<span class="nc" id="L104">        } catch (Exception e) {</span>
+<span class="nc" id="L105">            throw new RuntimeException(&quot;Erro ao gerar PDF&quot;, e);</span>
+        }
+    }
+
+    private List&lt;Animal&gt; fetchAnimals() {
+        try {
+<span class="fc" id="L111">            var entities = repository.findAll();</span>
+<span class="fc" id="L112">            return entities.stream()</span>
+<span class="fc" id="L113">                    .map(mapper::toModel)</span>
+<span class="fc" id="L114">                    .toList();</span>
+<span class="fc" id="L115">        } catch (DataAccessException e) {</span>
+<span class="fc" id="L116">            StackTraceElement stackTraceElement = e.getStackTrace()[0];</span>
+<span class="fc" id="L117">            log.error(stackTraceElement.toString());</span>
+<span class="fc" id="L118">            throw new BaseException(e.getMessage(), 500);</span>
+        }
+    }
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
