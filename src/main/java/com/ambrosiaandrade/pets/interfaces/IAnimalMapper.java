@@ -8,8 +8,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface IAnimalMapper {
 
-    IAnimalMapper INSTANCE = Mappers.getMapper(IAnimalMapper.class);
-
     AnimalEntity toEntity(Animal animal);
     Animal toModel(AnimalEntity animalEntity);
 
