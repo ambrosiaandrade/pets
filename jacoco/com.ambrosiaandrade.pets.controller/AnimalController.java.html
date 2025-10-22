@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnimalController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pets</a> &gt; <a href="index.source.html" class="el_package">com.ambrosiaandrade.pets.controller</a> &gt; <span class="el_source">AnimalController.java</span></div><h1>AnimalController.java</h1><pre class="source lang-java linenums">package com.ambrosiaandrade.pets.controller;
+
+import com.ambrosiaandrade.pets.exceptions.ErrorMessage;
+import com.ambrosiaandrade.pets.models.Animal;
+import com.ambrosiaandrade.pets.service.AnimalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+
+@Tag(name = &quot;1. Animal&quot;, description = &quot;Operations related to animals&quot;)
+@RestController
+@RequestMapping(&quot;/animal&quot;)
+public class AnimalController {
+
+    private final AnimalService service;
+
+<span class="fc" id="L27">    public AnimalController(AnimalService service) {</span>
+<span class="fc" id="L28">        this.service = service;</span>
+<span class="fc" id="L29">    }</span>
+
+    @Operation(
+            summary = &quot;Add a new animal&quot;,
+            description = &quot;Creates a new animal entry in the system and returns the saved animal along with its location URI.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;201&quot;,
+                    description = &quot;Animal created successfully&quot;,
+                    content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = Animal.class))}
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;,
+                    content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @PostMapping
+    public ResponseEntity&lt;Object&gt; addAnimal(@RequestBody Animal animal) {
+<span class="fc" id="L49">        var savedAnimal = service.saveAnimal(animal);</span>
+
+        URI location = ServletUriComponentsBuilder
+<span class="fc" id="L52">                .fromCurrentRequest()</span>
+<span class="fc" id="L53">                .path(&quot;/{id}&quot;)</span>
+<span class="fc" id="L54">                .buildAndExpand(savedAnimal.getId())</span>
+<span class="fc" id="L55">                .toUri();</span>
+
+<span class="fc" id="L57">        return ResponseEntity.created(location).body(savedAnimal);</span>
+    }
+
+    @Operation(
+            summary = &quot;Retrieve an animal by ID&quot;,
+            description = &quot;Returns an animal in the system.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Animal retrieved successfully&quot;,
+                    content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = Animal.class))}
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;,
+                    content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Object&gt; getAnimalById(@PathVariable int id) {
+<span class="fc" id="L78">        return ResponseEntity.ok().body(service.getAnimal(id));</span>
+    }
+
+    @Operation(
+            summary = &quot;Retrieve all animals by type&quot;,
+            description = &quot;Returns a list of all animals in the system.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Animals retrieved successfully&quot;,
+                    content = @Content(
+                            mediaType = &quot;application/json&quot;,
+                            array = @ArraySchema(schema = @Schema(implementation = Animal.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;,
+                    content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @GetMapping(&quot;/q&quot;)
+    public ResponseEntity&lt;List&lt;Animal&gt;&gt; getAnimalsByType(@RequestParam String type) {
+<span class="fc" id="L102">        return ResponseEntity.ok().body(service.getAnimalsByType(type));</span>
+    }
+
+    @Operation(
+            summary = &quot;Retrieve all animals&quot;,
+            description = &quot;Returns a list of all animals in the system.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;200&quot;,
+                    description = &quot;Animals retrieved successfully&quot;,
+                    content = @Content(
+                            mediaType = &quot;application/json&quot;,
+                            array = @ArraySchema(schema = @Schema(implementation = Animal.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;, content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Animal&gt;&gt; getAnimals() {
+<span class="fc" id="L125">        return ResponseEntity.ok().body(service.getAnimals());</span>
+    }
+
+    @Operation(
+            summary = &quot;Delete an animal by ID&quot;,
+            description = &quot;Deletes an animal from the system.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;204&quot;,
+                    description = &quot;Animal deleted successfully&quot;
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;, content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Object&gt; deleteAnimalById(@PathVariable int id) {
+<span class="fc" id="L144">        service.deleteAnimal(id);</span>
+<span class="fc" id="L145">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @Operation(
+            summary = &quot;Update an animal by ID&quot;,
+            description = &quot;Updates an existing animal in the system.&quot;
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = &quot;202&quot;,
+                    description = &quot;Animal updated successfully&quot;, content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = Animal.class))}
+            ),
+            @ApiResponse(
+                    responseCode = &quot;500&quot;,
+                    description = &quot;Internal server error&quot;, content = {@Content(mediaType = &quot;application/json&quot;, schema = @Schema(implementation = ErrorMessage.class))}
+            )
+    })
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Object&gt; updateAnimalById(@RequestBody Animal animal, @PathVariable int id) {
+<span class="fc" id="L164">        var response = service.updateAnimal(animal, id);</span>
+<span class="fc" id="L165">        return ResponseEntity.accepted().body(response);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
